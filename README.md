@@ -9,6 +9,8 @@
 
 Infrastructure as Code (IaC) and GitOps implementation for a 24-container Proxmox homelab featuring media services, monitoring, security, and business applications.
 
+🔗 **Repository**: [https://github.com/piyush97/homelab-gitops](https://github.com/piyush97/homelab-gitops)
+
 ## 🏗️ Infrastructure
 
 ### Container Services (24 total)
@@ -83,7 +85,7 @@ homelab-gitops/
 ### Quick Start
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/piyush97/homelab-gitops.git
 cd homelab-gitops
 
 # Initialize Terraform

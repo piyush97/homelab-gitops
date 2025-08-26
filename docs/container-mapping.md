@@ -1,5 +1,7 @@
 # Container Mapping: Existing → GitOps
 
+🔗 **Repository**: [https://github.com/piyush97/homelab-gitops](https://github.com/piyush97/homelab-gitops)
+
 This document maps the existing 24-container homelab infrastructure to the new GitOps Terraform definitions.
 
 ## Overview

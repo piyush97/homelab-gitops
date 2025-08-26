@@ -7,6 +7,7 @@
 help:
 	@echo "🏠 Homelab GitOps Infrastructure Management"
 	@echo "==========================================="
+	@echo "📖 Repository: https://github.com/piyush97/homelab-gitops"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  help             - Show this help message"

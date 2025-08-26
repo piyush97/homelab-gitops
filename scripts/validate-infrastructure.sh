@@ -259,8 +259,12 @@ main() {
     log_info "All components are ready for GitOps deployment"
     echo
     echo "🚀 Ready to deploy with:"
+    echo "   make deploy                              # Full automated deployment"
     echo "   terraform apply (in terraform/ directory)"
     echo "   ansible-playbook playbooks/site.yml (in ansible/ directory)"
+    echo ""
+    echo "📖 Documentation: https://github.com/piyush97/homelab-gitops"
+    echo "📋 Deployment Guide: docs/deployment-guide.md"
 }
 
 # Run main function
