@@ -2,7 +2,7 @@
 
 🔗 **Repository**: [https://github.com/piyush97/homelab-gitops](https://github.com/piyush97/homelab-gitops)
 
-This document maps the existing 24-container homelab infrastructure to the new GitOps Terraform definitions.
+This document maps the complete 28-container homelab infrastructure to GitOps Terraform definitions, including the new advanced monitoring stack.
 
 ## Overview
 
@@ -25,13 +25,17 @@ All existing containers have been successfully defined in Infrastructure as Code
 | 115 | flaresolverr | 192.168.0.138 | `flaresolverr` | Captcha solver support |
 | 118 | autobrr | 192.168.0.107 | `autobrr` | RSS torrent automation |
 
-### 📊 Monitoring & Infrastructure (5 containers)
+### 📊 Advanced Monitoring & Observability (9 containers)
 **File**: `terraform/containers/monitoring.tf`
 
 | VMID | Hostname | Current IP | Terraform Module | Key Features |
 |------|----------|------------|------------------|--------------|
-| 110 | grafana | 192.168.0.243 | `grafana` | Dashboards, firewall rules |
+| 110 | grafana | 192.168.0.243 | `grafana` | Enhanced dashboards with log correlation |
 | 109 | alpine-prometheus | DHCP | `alpine_prometheus` | Lightweight metrics, Alpine |
+| **130** | **loki** | **192.168.0.200** | `loki` | **Centralized logging, 31-day retention** |
+| **131** | **alertmanager** | **192.168.0.201** | `alertmanager` | **Intelligent alerting with mobile notifications** |
+| **132** | **blackbox-exporter** | **192.168.0.202** | `blackbox_exporter` | **External HTTP/TCP monitoring** |
+| **133** | **promtail** | **192.168.0.204** | `promtail` | **Log shipping to Loki** |
 | 106 | prometheus-pve-exporter | DHCP | `prometheus_pve_exporter` | Proxmox metrics |
 | 123 | uptimekuma | 192.168.0.181 | `uptimekuma` | Service monitoring |
 | 119 | glance | 192.168.0.44 | `glance` | Dashboard frontend |

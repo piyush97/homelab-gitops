@@ -7,18 +7,17 @@
 
 ## Overview
 
-Infrastructure as Code (IaC) and GitOps implementation for a 24-container Proxmox homelab featuring media services, monitoring, security, and business applications.
+Infrastructure as Code (IaC) and GitOps implementation for a 28-container Proxmox homelab featuring media services, advanced monitoring & observability, security, and business applications.
 
 🔗 **Repository**: [https://github.com/piyush97/homelab-gitops](https://github.com/piyush97/homelab-gitops)
 
 ## 🏗️ Infrastructure
 
-### Container Services (24 total)
-- **🎬 Media Stack**: Plex, Sonarr, Radarr, qBittorrent, Prowlarr, Lidarr, Overseerr
-- **📊 Monitoring**: Grafana, Prometheus, Uptime Kuma, PVE Exporter  
+### Container Services (28 total)
+- **🎬 Media Stack**: Plex, Sonarr, Radarr, qBittorrent, Prowlarr, Lidarr, Overseerr, FlareSolverr, AutoBrr
+- **📊 Advanced Monitoring**: Grafana, Prometheus, **Loki**, **AlertManager**, **Blackbox Exporter**, **Promtail**, Uptime Kuma, PVE Exporter, Glance
 - **🔒 Security**: SWAG, Wireguard, Vaultwarden, RustDesk
-- **🏢 Business**: Odoo ERP, Paperless-ngx
-- **☁️ Storage**: Immich, File Server, Google Drive
+- **🏢 Business**: Odoo ERP, Paperless-ngx, Immich, File Server, Google Drive
 - **🔔 Communication**: ntfy notifications
 
 ### Technology Stack
@@ -129,10 +128,11 @@ Real-time iPhone notifications via ntfy server:
 
 ## 📈 Infrastructure Metrics
 
-- **Total Containers**: 24 (all running bleeding-edge OS versions)
-- **Memory Allocation**: 27.5GB optimized (88% host utilization)
-- **Storage**: 10TB shared data, dedicated backup storage
-- **Uptime**: 99.9% availability with automated monitoring
+- **Total Containers**: 28 (24 original + 4 advanced monitoring)
+- **Memory Allocation**: 30.75GB optimized (99% host utilization)
+- **Storage**: 10TB shared data, optimized backup storage (103GB freed)
+- **Observability**: Enterprise-grade with centralized logging and intelligent alerting
+- **Uptime**: 99.9% availability with proactive monitoring and notifications
 
 ---
 
