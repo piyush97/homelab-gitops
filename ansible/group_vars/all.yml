@@ -1,0 +1,64 @@
+# Global variables for all containers
+---
+
+# Base configuration
+timezone: "America/New_York"
+locale: "en_US.UTF-8"
+
+# Common packages for all containers
+common_packages:
+  - curl
+  - wget
+  - vim
+  - htop
+  - unzip
+  - git
+  - rsync
+
+# SSH configuration
+ssh_config:
+  port: 22
+  permit_root_login: true
+  password_authentication: false
+  key_only: true
+
+# Log management
+log_retention_days: 30
+log_rotation_size: "100M"
+
+# Backup configuration
+backup_retention_days: 7
+backup_compression: zstd
+
+# Monitoring configuration
+node_exporter:
+  enabled: true
+  port: 9100
+  user: node_exporter
+
+# Security configuration
+firewall:
+  default_policy: drop
+  allow_established: true
+  allow_ssh: true
+
+# Container resource limits
+resource_limits:
+  enable_cgroups_v2: true
+  memory_accounting: true
+  cpu_accounting: true
+
+# Update management
+auto_updates:
+  enabled: false
+  reboot_if_required: false
+  notification_topic: homelab-info
+
+# Notification settings
+ntfy:
+  server: "http://192.168.0.124"
+  topics:
+    critical: homelab-critical
+    warning: homelab-warning
+    info: homelab-info
+    success: homelab-success

@@ -1,0 +1,78 @@
+# Media stack specific configuration
+---
+
+# Common media paths
+media_paths:
+  movies: "/data/media/movies"
+  tv: "/data/media/tv"
+  music: "/data/media/music"
+  downloads: "/data/downloads"
+  torrents: "/data/downloads/torrents"
+
+# Docker configuration for media containers
+docker:
+  enabled: true
+  compose_version: "2.21.0"
+  data_root: "/docker"
+  log_driver: "json-file"
+  log_opts:
+    max-size: "10m"
+    max-file: "3"
+
+# *arr stack configuration
+arr_stack:
+  base_url: ""
+  log_level: "info"
+  branch: "main"
+  
+# Plex specific configuration
+plex:
+  version: "latest"
+  claim_token: "" # Set via vault
+  allowed_networks: "192.168.0.0/24,10.10.10.0/24"
+  transcode_temp_dir: "/tmp/transcode"
+  
+# qBittorrent configuration  
+qbittorrent:
+  webui_port: 8080
+  connection_port_range: "6881-6889"
+  max_connec: 500
+  max_uploads: 8
+  
+# Prowlarr configuration
+prowlarr:
+  port: 9696
+  
+# Sonarr configuration
+sonarr:
+  port: 8989
+  
+# Radarr configuration
+radarr:
+  port: 7878
+  
+# Lidarr configuration
+lidarr:
+  port: 8686
+  
+# Overseerr configuration
+overseerr:
+  port: 5055
+  
+# FlareSolverr configuration
+flaresolverr:
+  port: 8191
+  log_level: "info"
+  
+# AutoBrr configuration
+autobrr:
+  port: 7474
+
+# VPN configuration for torrent containers
+vpn:
+  enabled: true
+  interface: "wg0"
+  kill_switch: true
+  dns_servers:
+    - "1.1.1.1"
+    - "1.0.0.1"

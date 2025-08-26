@@ -1,0 +1,110 @@
+# Security stack specific configuration
+---
+
+# SWAG (Secure Web Application Gateway) configuration
+swag:
+  version: "latest"
+  ports:
+    http: 80
+    https: 443
+  email: "admin@piyushmehta.com" # For Let's Encrypt
+  domain: "piyushmehta.com"
+  subdomains:
+    - "notifications"
+    - "immich" 
+    - "plex"
+    - "grafana"
+  
+  # Reverse proxy configurations
+  proxy_confs:
+    - service: "ntfy"
+      subdomain: "notifications"
+      upstream: "http://192.168.0.124"
+    - service: "immich"
+      subdomain: "immich"
+      upstream: "http://192.168.0.15:2283"
+    - service: "plex"
+      subdomain: "plex"
+      upstream: "http://192.168.0.207:32400"
+    - service: "grafana"
+      subdomain: "grafana"
+      upstream: "http://192.168.0.243:3000"
+
+# WireGuard VPN configuration
+wireguard:
+  interface: "wg0"
+  port: 51820
+  server_private_key: "" # Set via vault
+  server_public_key: "" # Generated from private key
+  network: "10.10.10.0/24"
+  dns_servers:
+    - "1.1.1.1"
+    - "1.0.0.1"
+  
+  # Client configurations
+  clients:
+    - name: "phone"
+      ip: "10.10.10.100"
+      public_key: "" # Set via vault
+    - name: "laptop"  
+      ip: "10.10.10.101"
+      public_key: "" # Set via vault
+
+# Vaultwarden (Bitwarden) configuration  
+vaultwarden:
+  version: "1.29.0-alpine"
+  port: 8080
+  database_url: "/data/db.sqlite3"
+  admin_token: "" # Set via vault
+  domain: "https://vault.piyushmehta.com"
+  
+  # Security settings
+  settings:
+    signups_allowed: false
+    invitations_allowed: true
+    show_password_hint: false
+    password_iterations: 100000
+
+# RustDesk Server configuration
+rustdesk:
+  hbbs_port: 21115
+  hbbr_port: 21116
+  relay_servers: []
+  key: "" # Set via vault
+
+# Firewall rules for security containers
+firewall_rules:
+  swag:
+    - port: 80
+      protocol: tcp
+      source: "0.0.0.0/0"
+      comment: "HTTP redirect"
+    - port: 443
+      protocol: tcp  
+      source: "0.0.0.0/0"
+      comment: "HTTPS"
+      
+  wireguard:
+    - port: 51820
+      protocol: udp
+      source: "0.0.0.0/0"
+      comment: "WireGuard VPN"
+      
+  vaultwarden:
+    - port: 8080
+      protocol: tcp
+      source: "192.168.0.0/24"
+      comment: "Vaultwarden WebUI"
+
+# SSL/TLS configuration
+ssl:
+  provider: "letsencrypt"
+  staging: false
+  key_type: "rsa2048"
+  
+# Fail2Ban configuration (if enabled)
+fail2ban:
+  enabled: false
+  bantime: "1h"
+  findtime: "10m"
+  maxretry: 5

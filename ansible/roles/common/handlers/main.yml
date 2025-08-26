@@ -1,0 +1,20 @@
+# Common handlers
+---
+
+- name: restart ssh
+  systemd:
+    name: ssh
+    state: restarted
+  listen: restart ssh
+
+- name: restart node_exporter
+  systemd:
+    name: node_exporter
+    state: restarted
+    daemon_reload: yes
+  listen: restart node_exporter
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+  listen: reload systemd

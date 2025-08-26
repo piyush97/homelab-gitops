@@ -1,0 +1,102 @@
+# Common tasks for all containers
+---
+
+- name: Update package cache
+  package:
+    update_cache: yes
+  tags: packages
+
+- name: Install common packages
+  package:
+    name: "{{ common_packages }}"
+    state: present
+  tags: packages
+
+- name: Set timezone
+  timezone:
+    name: "{{ timezone }}"
+  tags: system
+
+- name: Set locale
+  locale_gen:
+    name: "{{ locale }}"
+    state: present
+  when: ansible_os_family == "Debian"
+  tags: system
+
+- name: Create monitoring user
+  user:
+    name: "{{ node_exporter.user }}"
+    system: yes
+    shell: /bin/false
+    home: /var/lib/node_exporter
+    create_home: no
+  tags: monitoring
+
+- name: Configure log rotation
+  template:
+    src: logrotate.conf.j2
+    dest: /etc/logrotate.d/homelab
+    mode: '0644'
+  tags: logging
+
+- name: Install Node Exporter
+  get_url:
+    url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    dest: /tmp/node_exporter.tar.gz
+    mode: '0644'
+  tags: monitoring
+
+- name: Extract Node Exporter
+  unarchive:
+    src: /tmp/node_exporter.tar.gz
+    dest: /tmp
+    remote_src: yes
+  tags: monitoring
+
+- name: Install Node Exporter binary
+  copy:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+    dest: /usr/local/bin/node_exporter
+    mode: '0755'
+    owner: root
+    group: root
+    remote_src: yes
+  tags: monitoring
+
+- name: Create Node Exporter systemd service
+  template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    mode: '0644'
+  notify: restart node_exporter
+  tags: monitoring
+
+- name: Start and enable Node Exporter
+  systemd:
+    name: node_exporter
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  tags: monitoring
+
+- name: Configure SSH
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regex: "{{ item.regex }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regex: '^#?Port ', line: 'Port {{ ssh_config.port }}' }
+    - { regex: '^#?PermitRootLogin ', line: 'PermitRootLogin {{ ssh_config.permit_root_login | ternary("yes", "no") }}' }
+    - { regex: '^#?PasswordAuthentication ', line: 'PasswordAuthentication {{ ssh_config.password_authentication | ternary("yes", "no") }}' }
+  notify: restart ssh
+  tags: security
+
+- name: Clean up downloaded files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /tmp/node_exporter.tar.gz
+    - "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64"
+  tags: cleanup

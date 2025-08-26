@@ -1,0 +1,13 @@
+{
+  "data-root": "{{ docker.data_root | default('/var/lib/docker') }}",
+  "storage-driver": "{{ docker.daemon.storage_driver | default('overlay2') }}",
+  "log-driver": "{{ docker.daemon.log_driver | default('json-file') }}",
+  "log-opts": {
+{% for key, value in docker.daemon.log_opts.items() %}
+    "{{ key }}": "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+  },
+  "live-restore": true,
+  "userland-proxy": false,
+  "no-new-privileges": false
+}

@@ -1,0 +1,105 @@
+# Main playbook for all homelab containers
+---
+- name: Configure all containers
+  hosts: all
+  become: yes
+  
+  roles:
+    - common
+    
+  tags:
+    - base
+    - common
+
+- name: Configure media stack
+  hosts: media
+  become: yes
+  
+  roles:
+    - docker
+    
+  vars:
+    # Media-specific Docker configuration
+    docker:
+      enabled: true
+      compose_version: "{{ docker.compose_version }}"
+      data_root: "{{ docker_mount }}"
+      daemon: "{{ docker.daemon }}"
+      
+  tags:
+    - media
+    - docker
+
+- name: Configure monitoring stack  
+  hosts: monitoring
+  become: yes
+  
+  tasks:
+    - name: Configure Prometheus
+      include_tasks: ../tasks/prometheus.yml
+      when: "'prometheus' in services"
+      
+    - name: Configure Grafana
+      include_tasks: ../tasks/grafana.yml
+      when: "'grafana-server' in services"
+      
+    - name: Configure Uptime Kuma
+      include_tasks: ../tasks/uptimekuma.yml  
+      when: "'uptime-kuma' in services"
+      
+  tags:
+    - monitoring
+
+- name: Configure security stack
+  hosts: security
+  become: yes
+  
+  roles:
+    - docker
+    
+  tasks:
+    - name: Configure SWAG
+      include_tasks: ../tasks/swag.yml
+      when: "'nginx' in services"
+      
+    - name: Configure WireGuard
+      include_tasks: ../tasks/wireguard.yml
+      when: "'wireguard' in services"
+      
+    - name: Configure Vaultwarden
+      include_tasks: ../tasks/vaultwarden.yml
+      when: "'vaultwarden' in services"
+      
+  tags:
+    - security
+
+- name: Configure business applications
+  hosts: business
+  become: yes
+  
+  roles:
+    - docker
+    
+  tasks:
+    - name: Configure Immich
+      include_tasks: ../tasks/immich.yml
+      when: "'immich-server' in services"
+      
+    - name: Configure Paperless-ngx
+      include_tasks: ../tasks/paperless.yml
+      when: "'paperless-ngx' in services"
+      
+    - name: Configure Odoo
+      include_tasks: ../tasks/odoo.yml
+      when: "'odoo' in services"
+      
+    - name: Configure file server
+      include_tasks: ../tasks/fileserver.yml
+      when: "'cockpit' in services or 'samba' in services"
+      
+    - name: Configure ntfy
+      include_tasks: ../tasks/ntfy.yml
+      when: "'ntfy' in services"
+      
+  tags:
+    - business

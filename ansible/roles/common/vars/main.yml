@@ -1,0 +1,4 @@
+# Common role variables
+---
+
+node_exporter_version: "1.6.0"

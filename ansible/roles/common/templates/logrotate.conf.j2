@@ -1,0 +1,26 @@
+# Homelab log rotation configuration
+/var/log/*.log {
+    daily
+    missingok
+    rotate {{ log_retention_days }}
+    compress
+    delaycompress
+    notifempty
+    create 0644 root root
+    size {{ log_rotation_size }}
+    postrotate
+        /usr/bin/systemctl reload rsyslog > /dev/null 2>&1 || true
+    endscript
+}
+
+# Application specific logs
+/var/log/homelab/*.log {
+    daily
+    missingok
+    rotate {{ log_retention_days }}
+    compress
+    delaycompress
+    notifempty
+    create 0644 root root
+    size {{ log_rotation_size }}
+}

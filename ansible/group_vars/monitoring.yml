@@ -1,0 +1,117 @@
+# Monitoring stack specific configuration
+---
+
+# Prometheus configuration
+prometheus:
+  version: "2.45.0"
+  port: 9090
+  retention_time: "30d"
+  retention_size: "5GB"
+  scrape_interval: "15s"
+  evaluation_interval: "15s"
+  
+  # Scrape targets
+  targets:
+    - job_name: "prometheus"
+      static_configs:
+        - targets: ["localhost:9090"]
+    
+    - job_name: "node"
+      static_configs:
+        - targets:
+          - "192.168.0.207:9100"  # plex
+          - "192.168.0.132:9100"  # qbittorrent
+          - "192.168.0.243:9100"  # grafana
+          - "192.168.0.15:9100"   # immich
+          - "192.168.0.5:9100"    # fileserver
+    
+    - job_name: "proxmox"
+      static_configs:
+        - targets: ["192.168.0.6:9221"]  # pve-exporter
+
+# Grafana configuration
+grafana:
+  version: "10.0.0"
+  port: 3000
+  admin_user: admin
+  admin_password: "" # Set via vault
+  
+  # Data sources
+  datasources:
+    - name: "Prometheus"
+      type: "prometheus"
+      url: "http://prometheus:9090"
+      access: "proxy"
+      is_default: true
+  
+  # Dashboard provisioning
+  dashboards:
+    - name: "Node Exporter"
+      dashboard_id: 1860
+    - name: "Proxmox VE"  
+      dashboard_id: 10347
+    - name: "Container Monitoring"
+      dashboard_id: 893
+
+# Uptime Kuma configuration
+uptimekuma:
+  port: 3001
+  data_dir: "/app/data"
+  
+  # Monitors to configure
+  monitors:
+    - name: "Plex"
+      url: "http://192.168.0.207:32400/web"
+      type: "http"
+      interval: 60
+    - name: "Grafana"
+      url: "http://192.168.0.243:3000"
+      type: "http"  
+      interval: 60
+    - name: "Immich"
+      url: "http://192.168.0.15:2283"
+      type: "http"
+      interval: 60
+    - name: "Fileserver Cockpit"
+      url: "http://192.168.0.5:9090"
+      type: "http"
+      interval: 60
+
+# Glance dashboard configuration
+glance:
+  port: 61208
+  title: "Homelab Dashboard"
+  theme: "dark"
+  
+  # Widget configuration
+  widgets:
+    - type: "system-info"
+      title: "System Information"
+    - type: "services"
+      title: "Critical Services"
+      services:
+        - name: "Plex"
+          url: "http://192.168.0.207:32400"
+        - name: "Immich"
+          url: "http://192.168.0.15:2283"
+        - name: "Fileserver"
+          url: "http://192.168.0.5:9090"
+
+# Node Exporter configuration
+node_exporter:
+  version: "1.6.0"
+  port: 9100
+  enabled_collectors:
+    - "systemd"
+    - "processes"
+    - "filesystem"
+    - "diskstats"
+    - "netstat"
+    - "meminfo"
+    - "loadavg"
+    - "cpu"
+
+# Alert Manager configuration (future)
+alertmanager:
+  enabled: false
+  port: 9093

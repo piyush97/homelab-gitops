@@ -1,0 +1,22 @@
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User={{ node_exporter.user }}
+Group={{ node_exporter.user }}
+Type=simple
+ExecStart=/usr/local/bin/node_exporter \
+    --web.listen-address=:{{ node_exporter.port }} \
+{% for collector in node_exporter.enabled_collectors %}
+    --collector.{{ collector }} \
+{% endfor %}
+    --no-collector.mdadm
+
+SyslogIdentifier=node_exporter
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

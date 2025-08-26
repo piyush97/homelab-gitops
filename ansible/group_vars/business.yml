@@ -1,0 +1,162 @@
+# Business applications specific configuration
+---
+
+# Immich photo management configuration
+immich:
+  version: "v1.88.0"
+  upload_location: "/data/immich/upload"
+  library_location: "/data/immich/library"
+  
+  # Database configuration
+  database:
+    type: "postgresql"
+    host: "immich_postgres"
+    port: 5432
+    name: "immich"
+    user: "immich"
+    password: "" # Set via vault
+  
+  # Redis configuration
+  redis:
+    host: "immich_redis"
+    port: 6379
+    
+  # Machine learning
+  machine_learning:
+    enabled: true
+    model_cache: "/data/immich/model-cache"
+
+# File server configuration
+fileserver:
+  # Cockpit web interface
+  cockpit:
+    port: 9090
+    allowed_hosts: "192.168.0.0/24"
+    
+  # Samba/SMB configuration
+  samba:
+    workgroup: "HOMELAB"
+    shares:
+      - name: "media"
+        path: "/data/media"
+        read_only: false
+        browseable: true
+        valid_users: "samba"
+      - name: "documents" 
+        path: "/data/documents"
+        read_only: false
+        browseable: true
+        valid_users: "samba"
+      - name: "backups"
+        path: "/data/backups"
+        read_only: true
+        browseable: false
+        valid_users: "admin"
+
+# Docker host configuration
+docker_host:
+  version: "24.0.0"
+  compose_version: "2.21.0"
+  
+  # Docker daemon configuration
+  daemon:
+    log_driver: "json-file"
+    log_opts:
+      max_size: "10m"
+      max_file: "3"
+    storage_driver: "overlay2"
+    
+  # Network configuration
+  networks:
+    - name: "homelab"
+      driver: "bridge"
+      subnet: "172.20.0.0/16"
+
+# Odoo ERP configuration
+odoo:
+  version: "16.0"
+  port: 8069
+  
+  # Database configuration
+  database:
+    host: "localhost"
+    port: 5432
+    name: "odoo"
+    user: "odoo"
+    password: "" # Set via vault
+    
+  # Configuration
+  config:
+    addons_path: "/opt/odoo/addons"
+    data_dir: "/opt/odoo/data"
+    logfile: "/var/log/odoo/odoo.log"
+    log_level: "info"
+
+# Paperless-ngx document management
+paperless_ngx:
+  version: "1.17.0"
+  port: 8000
+  
+  # Paths
+  consume_dir: "/data/paperless/consume"
+  data_dir: "/data/paperless/data"
+  media_root: "/data/paperless/media"
+  
+  # OCR configuration
+  ocr:
+    language: "eng"
+    mode: "skip"
+    
+  # Database configuration
+  database:
+    type: "postgresql"
+    host: "paperless_postgres"
+    port: 5432
+    name: "paperless"
+    user: "paperless"
+    password: "" # Set via vault
+
+# Google Drive sync configuration
+google_drive:
+  sync_dir: "/data/google-drive"
+  exclude_patterns:
+    - "*.tmp"
+    - ".DS_Store"
+    - "Thumbs.db"
+  
+# ntfy notification server
+ntfy:
+  port: 80
+  base_url: "https://notifications.piyushmehta.com"
+  cache_file: "/var/lib/ntfy/cache.db"
+  
+  # Topics and access control
+  topics:
+    homelab-critical:
+      read: "*"
+      write: "192.168.0.0/24"
+    homelab-warning:
+      read: "*" 
+      write: "192.168.0.0/24"
+    homelab-info:
+      read: "*"
+      write: "192.168.0.0/24"
+    homelab-success:
+      read: "*"
+      write: "192.168.0.0/24"
+
+# Backup configuration for business applications
+backup:
+  enabled: true
+  schedule:
+    immich: "0 2 * * *"      # Daily 2 AM
+    fileserver: "0 2 * * *"  # Daily 2 AM  
+    paperless: "0 3 * * *"   # Daily 3 AM
+    odoo: "0 3 * * *"        # Daily 3 AM
+    
+  retention:
+    critical: 7    # 7 days for critical services
+    standard: 5    # 5 days for standard services
+    
+  compression: "zstd"
+  storage_path: "/vault/backups"
