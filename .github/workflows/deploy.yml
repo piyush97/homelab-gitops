@@ -56,7 +56,7 @@ jobs:
         terraform show -no-color tfplan > plan.txt
         
     - name: Upload Plan Output
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: terraform-plan-${{ github.event.inputs.environment }}
         path: |
@@ -112,7 +112,7 @@ jobs:
         ansible all -m shell -a "systemctl status node_exporter" || true
         
     - name: Upload Ansible Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ansible-report-${{ github.event.inputs.environment }}
         path: ansible/inventory-report.yml

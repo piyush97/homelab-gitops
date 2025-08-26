@@ -55,7 +55,7 @@ jobs:
         terraform plan -input=false -out=tfplan
         
     - name: Upload Plan Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: terraform-plan
         path: terraform/tfplan
