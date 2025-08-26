@@ -1,0 +1,78 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+.terraform/
+.terraform.lock.hcl
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ansible
+*.retry
+.vault_pass.txt
+vault_keys/
+group_vars/*/vault.yml
+host_vars/*/vault.yml
+
+# Secrets and credentials
+secrets/
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+.env
+.env.local
+.env.production.local
+
+# Logs
+*.log
+logs/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+tmp/
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Node.js (if using any JS tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
