@@ -9,7 +9,7 @@
 
 Infrastructure as Code (IaC) and GitOps implementation for a 28-container Proxmox homelab featuring media services, advanced monitoring & observability, security, and business applications.
 
-🔗 **Repository**: [https://github.com/piyush97/homelab-gitops](https://github.com/piyush97/homelab-gitops)
+🔗 **Official Documentation**: [https://github.com/piyush97/homelab-docs](https://piyush97.github.io/homelab-docs)
 
 ## 🏗️ Infrastructure
 
