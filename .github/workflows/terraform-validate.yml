@@ -1,0 +1,62 @@
+name: Terraform Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: 
+      - 'terraform/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'terraform/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.6.0
+        
+    - name: Terraform Format Check
+      working-directory: ./terraform
+      run: terraform fmt -check -recursive
+      
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: |
+        # Create dummy terraform.tfvars for validation
+        cat > terraform.tfvars << EOF
+        proxmox_api_url = "https://pve.example.com:8006/api2/json"
+        proxmox_api_user = "terraform@pve"
+        proxmox_api_password = "dummy"
+        target_node = "piyushmehta"
+        network_bridge = "vmbr0"
+        primary_gateway = "192.168.0.1"
+        vpn_gateway = "10.10.10.1"
+        shared_data_storage = "data"
+        docker_storage = "vault"
+        EOF
+        terraform init
+        
+    - name: Terraform Validate
+      working-directory: ./terraform
+      run: terraform validate
+      
+    - name: Terraform Plan (Dry Run)
+      working-directory: ./terraform
+      run: |
+        # Plan without applying to validate configuration
+        terraform plan -input=false -out=tfplan
+        
+    - name: Upload Plan Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-plan
+        path: terraform/tfplan
+        retention-days: 5

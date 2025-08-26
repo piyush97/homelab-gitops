@@ -1,0 +1,139 @@
+name: Deploy Infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      terraform_action:
+        description: 'Terraform action'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+      run_ansible:
+        description: 'Run Ansible configuration'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  TF_VAR_proxmox_api_url: ${{ secrets.PROXMOX_API_URL }}
+  TF_VAR_proxmox_api_user: ${{ secrets.PROXMOX_API_USER }}
+  TF_VAR_proxmox_api_password: ${{ secrets.PROXMOX_API_PASSWORD }}
+
+jobs:
+  terraform:
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'staging'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.6.0
+        
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+      
+    - name: Terraform Plan
+      working-directory: ./terraform
+      run: |
+        terraform plan -input=false -out=tfplan
+        terraform show -no-color tfplan > plan.txt
+        
+    - name: Upload Plan Output
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-plan-${{ github.event.inputs.environment }}
+        path: |
+          terraform/tfplan
+          terraform/plan.txt
+        retention-days: 5
+        
+    - name: Terraform Apply
+      if: github.event.inputs.terraform_action == 'apply'
+      working-directory: ./terraform
+      run: terraform apply -input=false tfplan
+      
+    - name: Terraform Destroy
+      if: github.event.inputs.terraform_action == 'destroy'
+      working-directory: ./terraform
+      run: terraform destroy -auto-approve
+
+  ansible:
+    runs-on: self-hosted
+    needs: terraform
+    if: github.event.inputs.run_ansible == 'true' && (success() || github.event.inputs.terraform_action == 'plan')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install Ansible
+      run: |
+        python -m pip install --upgrade pip
+        pip install ansible
+        
+    - name: Run Ansible Playbook
+      working-directory: ./ansible
+      run: |
+        # Test connectivity first
+        ansible all -m ping
+        
+        # Run main playbook
+        ansible-playbook playbooks/site.yml --diff
+        
+    - name: Generate Infrastructure Report
+      working-directory: ./ansible
+      run: |
+        # Generate inventory report
+        ansible-inventory --list --yaml > inventory-report.yml
+        
+        # Test service connectivity
+        ansible all -m shell -a "systemctl status node_exporter" || true
+        
+    - name: Upload Ansible Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: ansible-report-${{ github.event.inputs.environment }}
+        path: ansible/inventory-report.yml
+        retention-days: 5
+
+  notify:
+    runs-on: self-hosted
+    needs: [terraform, ansible]
+    if: always()
+    
+    steps:
+    - name: Notify Success
+      if: needs.terraform.result == 'success' && (needs.ansible.result == 'success' || needs.ansible.result == 'skipped')
+      run: |
+        curl -X POST "http://192.168.0.124/homelab-success" \
+          -H "Content-Type: text/plain" \
+          -d "✅ GitOps deployment completed successfully for ${{ github.event.inputs.environment }}"
+          
+    - name: Notify Failure  
+      if: needs.terraform.result == 'failure' || needs.ansible.result == 'failure'
+      run: |
+        curl -X POST "http://192.168.0.124/homelab-critical" \
+          -H "Content-Type: text/plain" \
+          -d "🔴 GitOps deployment failed for ${{ github.event.inputs.environment }}"

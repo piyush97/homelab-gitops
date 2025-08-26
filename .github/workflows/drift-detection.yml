@@ -1,0 +1,111 @@
+name: Infrastructure Drift Detection
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  drift-check:
+    runs-on: self-hosted
+    
+    env:
+      TF_VAR_proxmox_api_url: ${{ secrets.PROXMOX_API_URL }}
+      TF_VAR_proxmox_api_user: ${{ secrets.PROXMOX_API_USER }}
+      TF_VAR_proxmox_api_password: ${{ secrets.PROXMOX_API_PASSWORD }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.6.0
+        
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+      
+    - name: Terraform Plan - Detect Drift
+      working-directory: ./terraform
+      run: |
+        terraform plan -detailed-exitcode -out=drift-plan 2>&1 | tee drift-output.txt
+        PLAN_EXIT_CODE=$?
+        echo "PLAN_EXIT_CODE=$PLAN_EXIT_CODE" >> $GITHUB_ENV
+        
+        # Exit codes: 0 = no changes, 1 = error, 2 = changes detected
+        if [ $PLAN_EXIT_CODE -eq 2 ]; then
+          echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
+          echo "🔄 Infrastructure drift detected!"
+        elif [ $PLAN_EXIT_CODE -eq 0 ]; then
+          echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
+          echo "✅ No infrastructure drift detected"
+        else
+          echo "❌ Error running terraform plan"
+          exit 1
+        fi
+        
+    - name: Generate Drift Report
+      if: env.DRIFT_DETECTED == 'true'
+      working-directory: ./terraform
+      run: |
+        echo "# Infrastructure Drift Report" > drift-report.md
+        echo "Generated: $(date)" >> drift-report.md
+        echo "" >> drift-report.md
+        echo "## Detected Changes:" >> drift-report.md
+        echo '```hcl' >> drift-report.md
+        terraform show -no-color drift-plan >> drift-report.md
+        echo '```' >> drift-report.md
+        
+    - name: Upload Drift Report
+      if: env.DRIFT_DETECTED == 'true'
+      uses: actions/upload-artifact@v3
+      with:
+        name: drift-report-${{ github.run_number }}
+        path: |
+          terraform/drift-report.md
+          terraform/drift-output.txt
+        retention-days: 30
+        
+    - name: Notify Drift Detection
+      if: env.DRIFT_DETECTED == 'true'
+      run: |
+        # Send critical notification for infrastructure drift
+        curl -X POST "http://192.168.0.124/homelab-warning" \
+          -H "Content-Type: text/plain; charset=utf-8" \
+          -d "🔄 Infrastructure drift detected in homelab GitOps!
+        
+        Drift detected at: $(date)
+        View details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        
+        Manual review and reconciliation may be required."
+        
+    - name: Notify Success
+      if: env.DRIFT_DETECTED == 'false'
+      run: |
+        # Send success notification for clean state
+        curl -X POST "http://192.168.0.124/homelab-info" \
+          -H "Content-Type: text/plain" \
+          -d "✅ Daily drift check completed - No infrastructure drift detected"
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run Trivy security scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'config'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
