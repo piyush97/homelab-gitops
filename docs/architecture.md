@@ -33,6 +33,8 @@ Internet
 
 ## 📦 Container Categories
 
+**Total Containers**: 28 (24 original + 4 advanced monitoring)
+
 ### 🎬 Media Stack (9 containers)
 **Purpose**: Media acquisition, organization, and streaming
 
@@ -54,22 +56,28 @@ Internet
 - Integrated *arr stack workflow
 - Automated media organization
 
-### 📊 Monitoring Stack (5 containers)
-**Purpose**: System monitoring, metrics, and alerting
+### 📊 Advanced Monitoring Stack (9 containers)
+**Purpose**: Comprehensive observability with metrics, logs, and alerting
 
 | Service | Container | IP | Purpose |
 |---------|-----------|----|---------| 
 | Grafana | `grafana` (110) | 192.168.0.243 | Visualization dashboards |
 | Prometheus | `alpine_prometheus` (109) | DHCP | Metrics collection |
+| **Loki** | `loki` (130) | 192.168.0.200 | **Log aggregation** |
+| **AlertManager** | `alertmanager` (131) | 192.168.0.201 | **Advanced alerting** |
+| **Blackbox Exporter** | `blackbox_exporter` (132) | 192.168.0.202 | **External monitoring** |
+| **Promtail** | `promtail` (133) | 192.168.0.204 | **Log shipping** |
 | PVE Exporter | `prometheus_pve_exporter` (106) | DHCP | Proxmox metrics |
 | Uptime Kuma | `uptimekuma` (123) | 192.168.0.181 | Service monitoring |
 | Glance | `glance` (119) | 192.168.0.44 | System dashboard |
 
-**Monitoring Coverage**:
-- Infrastructure metrics (CPU, memory, storage)
-- Service health checks and uptime
-- Custom dashboards for each service category
-- Real-time alerting via ntfy
+**Advanced Observability Features**:
+- **Infrastructure Metrics**: CPU, memory, storage, network performance
+- **Centralized Logging**: Log aggregation from all 28 containers
+- **External Monitoring**: HTTP/TCP endpoint health checks
+- **Advanced Alerting**: Intelligent routing with mobile notifications
+- **Custom Dashboards**: Service-specific visualizations and log correlation
+- **Real-time Streaming**: Live log tailing and metric updates
 
 ### 🔒 Security Stack (4 containers)
 **Purpose**: Network security, access control, and encryption

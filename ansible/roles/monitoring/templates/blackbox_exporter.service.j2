@@ -1,0 +1,19 @@
+[Unit]
+Description=Blackbox Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=blackbox_exporter
+Group=blackbox_exporter
+Type=simple
+ExecStart=/usr/local/bin/blackbox_exporter \
+    --config.file=/etc/blackbox_exporter/blackbox.yml \
+    --web.listen-address=:{{ blackbox_exporter.port }}
+
+SyslogIdentifier=blackbox_exporter
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

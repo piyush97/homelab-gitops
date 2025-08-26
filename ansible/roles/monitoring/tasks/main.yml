@@ -1,0 +1,22 @@
+# Advanced monitoring stack installation
+---
+
+- name: Configure Loki
+  include_tasks: "{{ playbook_dir }}/../tasks/loki.yml"
+  when: "'loki' in services"
+
+- name: Configure AlertManager
+  include_tasks: "{{ playbook_dir }}/../tasks/alertmanager.yml"
+  when: "'alertmanager' in services"
+
+- name: Configure Blackbox Exporter
+  include_tasks: "{{ playbook_dir }}/../tasks/blackbox_exporter.yml"
+  when: "'blackbox_exporter' in services"
+
+- name: Configure Promtail
+  include_tasks: "{{ playbook_dir }}/../tasks/promtail.yml"
+  when: "'promtail' in services"
+
+- name: Update Prometheus configuration with new exporters
+  include_tasks: "{{ playbook_dir }}/../tasks/prometheus.yml"
+  when: "'prometheus' in services"

@@ -1,0 +1,134 @@
+groups:
+- name: homelab.rules
+  rules:
+  
+  # Node/Infrastructure alerts
+  - alert: HostOutOfMemory
+    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host out of memory (instance {{ $labels.instance }})"
+      description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: HostMemoryUnderMemoryPressure
+    expr: rate(node_vmstat_pgmajfault[1m]) > 1000
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host memory under memory pressure (instance {{ $labels.instance }})"
+      description: "The node is under heavy memory pressure. High rate of major page faults\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: HostOutOfDiskSpace
+    expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host out of disk space (instance {{ $labels.instance }})"
+      description: "Disk is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: HostDiskWillFillIn24Hours
+    expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) predict_linear(node_filesystem_avail_bytes[1h], 24*3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host disk will fill in 24 hours (instance {{ $labels.instance }})"
+      description: "Filesystem is predicted to run out of space within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: HostHighCpuLoad
+    expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host high CPU load (instance {{ $labels.instance }})"
+      description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: HostSwapIsFillingUp
+    expr: (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host swap is filling up (instance {{ $labels.instance }})"
+      description: "Swap is filling up (>80%)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  # Service availability alerts
+  - alert: HostSystemdServiceCrashed
+    expr: node_systemd_unit_state{state="failed"} == 1
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host systemd service crashed (instance {{ $labels.instance }})"
+      description: "systemd service crashed\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  # Blackbox monitoring alerts
+  - alert: BlackboxProbeFailed
+    expr: probe_success == 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Blackbox probe failed (instance {{ $labels.instance }})"
+      description: "Probe failed\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: BlackboxSlowProbe
+    expr: avg_over_time(probe_duration_seconds[1m]) > 1
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Blackbox slow probe (instance {{ $labels.instance }})"
+      description: "Blackbox probe took more than 1s to complete\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: BlackboxProbeHttpFailure
+    expr: probe_http_status_code <= 199 OR probe_http_status_code >= 400
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Blackbox probe HTTP failure (instance {{ $labels.instance }})"
+      description: "HTTP status code is not 200-399\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  # Container-specific alerts
+  - alert: ContainerKilled
+    expr: time() - container_last_seen > 60
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Container killed (instance {{ $labels.instance }})"
+      description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  # Media stack alerts
+  - alert: PlexDown
+    expr: probe_success{instance="http://192.168.0.207:32400"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Plex Media Server is down"
+      description: "Plex is not responding on http://192.168.0.207:32400"
+
+  - alert: GrafanaDown
+    expr: probe_success{instance="http://192.168.0.243:3000"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Grafana is down"
+      description: "Grafana dashboard is not responding on http://192.168.0.243:3000"
+
+  - alert: ImmichDown
+    expr: probe_success{instance="http://192.168.0.15:2283"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Immich photo management is down"
+      description: "Immich is not responding on http://192.168.0.15:2283"

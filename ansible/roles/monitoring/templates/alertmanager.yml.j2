@@ -1,0 +1,34 @@
+global:
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alertmanager@homelab.local'
+
+route:
+  group_by: {{ alertmanager.routes.group_by | to_json }}
+  group_wait: {{ alertmanager.routes.group_wait }}
+  group_interval: {{ alertmanager.routes.group_interval }}
+  repeat_interval: {{ alertmanager.routes.repeat_interval }}
+  receiver: {{ alertmanager.routes.receiver }}
+
+receivers:
+{% for receiver in alertmanager.receivers %}
+- name: {{ receiver.name }}
+{% if receiver.webhook_configs is defined %}
+  webhook_configs:
+{% for webhook in receiver.webhook_configs %}
+  - url: {{ webhook.url }}
+    title: "{{ webhook.title }}"
+    send_resolved: {{ webhook.send_resolved }}
+    http_config:
+      basic_auth:
+        username: ''
+        password: ''
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'dev', 'instance']

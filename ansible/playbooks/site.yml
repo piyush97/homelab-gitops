@@ -34,6 +34,9 @@
   hosts: monitoring
   become: yes
   
+  roles:
+    - monitoring
+  
   tasks:
     - name: Configure Prometheus
       include_tasks: ../tasks/prometheus.yml

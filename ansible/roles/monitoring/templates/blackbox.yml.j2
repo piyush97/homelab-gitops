@@ -1,0 +1,24 @@
+modules:
+{% for module_name, module_config in blackbox_exporter.modules.items() %}
+  {{ module_name }}:
+    prober: {{ module_config.prober }}
+    timeout: {{ module_config.timeout }}
+{% if module_config.http is defined %}
+    http:
+{% if module_config.http.valid_http_versions is defined %}
+      valid_http_versions: {{ module_config.http.valid_http_versions | to_json }}
+{% endif %}
+{% if module_config.http.valid_status_codes is defined %}
+      valid_status_codes: {{ module_config.http.valid_status_codes | to_json }}
+{% endif %}
+{% if module_config.http.method is defined %}
+      method: {{ module_config.http.method }}
+{% endif %}
+{% endif %}
+{% if module_config.icmp is defined %}
+    icmp:
+{% if module_config.icmp.preferred_ip_protocol is defined %}
+      preferred_ip_protocol: {{ module_config.icmp.preferred_ip_protocol }}
+{% endif %}
+{% endif %}
+{% endfor %}

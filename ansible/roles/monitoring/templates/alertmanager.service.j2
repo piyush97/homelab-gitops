@@ -1,0 +1,22 @@
+[Unit]
+Description=AlertManager
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=alertmanager
+Group=alertmanager
+Type=simple
+ExecStart=/usr/local/bin/alertmanager \
+    --config.file=/etc/alertmanager/alertmanager.yml \
+    --storage.path=/var/lib/alertmanager/data \
+    --web.listen-address=:{{ alertmanager.port }} \
+    --cluster.listen-address=:{{ alertmanager.cluster_port }} \
+    --data.retention={{ alertmanager.data_retention }}
+
+SyslogIdentifier=alertmanager
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

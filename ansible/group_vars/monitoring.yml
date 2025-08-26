@@ -28,6 +28,39 @@ prometheus:
     - job_name: "proxmox"
       static_configs:
         - targets: ["192.168.0.6:9221"]  # pve-exporter
+    
+    - job_name: "blackbox"
+      static_configs:
+        - targets: ["192.168.0.202:9115"]  # blackbox-exporter
+    
+    - job_name: "loki"
+      static_configs:
+        - targets: ["192.168.0.200:3100"]  # loki
+    
+    - job_name: "alertmanager"
+      static_configs:
+        - targets: ["192.168.0.201:9093"]  # alertmanager
+        
+    # Blackbox probes for external monitoring
+    - job_name: "blackbox_http"
+      metrics_path: /probe
+      params:
+        module: [http_2xx]
+      static_configs:
+        - targets:
+          - "http://192.168.0.15:2283"    # immich
+          - "http://192.168.0.207:32400"  # plex
+          - "http://192.168.0.243:3000"   # grafana
+          - "http://192.168.0.5:9090"     # cockpit
+          - "http://192.168.0.124"        # ntfy
+          - "http://192.168.0.181:3001"   # uptime-kuma
+      relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: "192.168.0.202:9115"  # blackbox exporter
 
 # Grafana configuration
 grafana:
@@ -43,6 +76,11 @@ grafana:
       url: "http://prometheus:9090"
       access: "proxy"
       is_default: true
+    - name: "Loki"
+      type: "loki"
+      url: "http://192.168.0.200:3100"
+      access: "proxy"
+      is_default: false
   
   # Dashboard provisioning
   dashboards:
@@ -111,7 +149,94 @@ node_exporter:
     - "loadavg"
     - "cpu"
 
-# Alert Manager configuration (future)
+# Loki log aggregation configuration
+loki:
+  version: "2.9.0"
+  port: 3100
+  grpc_port: 9095
+  retention_period: "744h"  # 31 days
+  
+  # Storage configuration
+  storage:
+    filesystem:
+      directory: "/loki/chunks"
+    boltdb_shipper:
+      active_index_directory: "/loki/boltdb-shipper-active"
+      cache_location: "/loki/boltdb-shipper-cache"
+      
+  # Limits configuration
+  limits:
+    ingestion_rate_mb: 16
+    ingestion_burst_size_mb: 32
+    max_cache_freshness_per_query: "10m"
+    max_concurrent_tail_requests: 10
+
+# Alert Manager configuration
 alertmanager:
-  enabled: false
+  version: "0.25.0"
   port: 9093
+  cluster_port: 9094
+  data_retention: "120h"
+  
+  # Route configuration
+  routes:
+    group_by: ['alertname', 'cluster', 'service']
+    group_wait: "10s"
+    group_interval: "10s"
+    repeat_interval: "1h"
+    receiver: "homelab-notifications"
+    
+  # Receivers configuration
+  receivers:
+    - name: "homelab-notifications"
+      webhook_configs:
+        - url: "http://192.168.0.124/homelab-critical"
+          title: "🚨 {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}"
+          send_resolved: true
+
+# Blackbox Exporter configuration
+blackbox_exporter:
+  version: "0.24.0"
+  port: 9115
+  
+  # Probe modules
+  modules:
+    http_2xx:
+      prober: "http"
+      timeout: "5s"
+      http:
+        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+        valid_status_codes: [200, 301, 302]
+        method: "GET"
+        
+    tcp_connect:
+      prober: "tcp"
+      timeout: "5s"
+      
+    icmp:
+      prober: "icmp"
+      timeout: "5s"
+      icmp:
+        preferred_ip_protocol: "ip4"
+
+# Promtail log shipping configuration  
+promtail:
+  version: "2.9.0"
+  port: 9080
+  loki_url: "http://192.168.0.200:3100"
+  
+  # Scrape configurations
+  scrape_configs:
+    - job_name: "system_logs"
+      static_configs:
+        - targets: ["localhost"]
+          labels:
+            job: "system_logs"
+            __path__: "/var/log/*.log"
+            
+    - job_name: "docker_logs"
+      static_configs:
+        - targets: ["localhost"]
+          labels:
+            job: "docker_logs"
+            __path__: "/docker/*/logs/*.log"
