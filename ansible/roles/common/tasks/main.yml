@@ -2,12 +2,12 @@
 ---
 
 - name: Update package cache
-  package:
-    update_cache: yes
+  ansible.builtin.package:
+    update_cache: true
   tags: packages
 
 - name: Install common packages
-  package:
+  ansible.builtin.package:
     name: "{{ common_packages }}"
     state: present
   tags: packages
@@ -25,47 +25,47 @@
   tags: system
 
 - name: Create monitoring user
-  user:
+  ansible.builtin.user:
     name: "{{ node_exporter.user }}"
-    system: yes
+    system: true
     shell: /bin/false
     home: /var/lib/node_exporter
     create_home: no
   tags: monitoring
 
 - name: Configure log rotation
-  template:
+  ansible.builtin.template:
     src: logrotate.conf.j2
     dest: /etc/logrotate.d/homelab
     mode: '0644'
   tags: logging
 
 - name: Install Node Exporter
-  get_url:
+  ansible.builtin.get_url:
     url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
     dest: /tmp/node_exporter.tar.gz
     mode: '0644'
   tags: monitoring
 
 - name: Extract Node Exporter
-  unarchive:
+  ansible.builtin.unarchive:
     src: /tmp/node_exporter.tar.gz
     dest: /tmp
-    remote_src: yes
+    remote_src: true
   tags: monitoring
 
 - name: Install Node Exporter binary
-  copy:
+  ansible.builtin.copy:
     src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
     dest: /usr/local/bin/node_exporter
     mode: '0755'
     owner: root
     group: root
-    remote_src: yes
+    remote_src: true
   tags: monitoring
 
 - name: Create Node Exporter systemd service
-  template:
+  ansible.builtin.template:
     src: node_exporter.service.j2
     dest: /etc/systemd/system/node_exporter.service
     mode: '0644'
@@ -73,15 +73,15 @@
   tags: monitoring
 
 - name: Start and enable Node Exporter
-  systemd:
+  ansible.builtin.systemd:
     name: node_exporter
-    enabled: yes
+    enabled: true
     state: started
-    daemon_reload: yes
+    daemon_reload: true
   tags: monitoring
 
 - name: Configure SSH
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regex: "{{ item.regex }}"
     line: "{{ item.line }}"
@@ -93,7 +93,7 @@
   tags: security
 
 - name: Clean up downloaded files
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:

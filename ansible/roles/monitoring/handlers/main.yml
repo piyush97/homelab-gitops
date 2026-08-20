@@ -2,25 +2,25 @@
 ---
 
 - name: restart loki
-  systemd:
+  ansible.builtin.systemd:
     name: loki
     state: restarted
   listen: restart loki
 
 - name: restart alertmanager
-  systemd:
+  ansible.builtin.systemd:
     name: alertmanager
     state: restarted
   listen: restart alertmanager
 
 - name: restart blackbox_exporter
-  systemd:
+  ansible.builtin.systemd:
     name: blackbox_exporter
     state: restarted
   listen: restart blackbox_exporter
 
 - name: restart promtail
-  systemd:
+  ansible.builtin.systemd:
     name: promtail
     state: restarted
   listen: restart promtail

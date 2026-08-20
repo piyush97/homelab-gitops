@@ -2,7 +2,7 @@
 ---
 
 - name: restart docker
-  systemd:
+  ansible.builtin.systemd:
     name: docker
     state: restarted
   listen: restart docker
