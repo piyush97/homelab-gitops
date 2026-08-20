@@ -1,5 +1,7 @@
 # 🏠 Homelab GitOps Infrastructure
 
+[![CI](https://github.com/piyush97/homelab-gitops/actions/workflows/ci.yml/badge.svg)](https://github.com/piyush97/homelab-gitops/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Terraform](https://img.shields.io/badge/Terraform-%23623CE4.svg?style=for-the-badge&logo=terraform&logoColor=white)](https://www.terraform.io/)
 [![Ansible](https://img.shields.io/badge/ansible-%23EE0000.svg?style=for-the-badge&logo=ansible&logoColor=white)](https://www.ansible.com/)
 [![Proxmox](https://img.shields.io/badge/Proxmox-E57000?style=for-the-badge&logo=proxmox&logoColor=white)](https://www.proxmox.com/)
@@ -19,6 +21,64 @@ Infrastructure as Code (IaC) and GitOps implementation for a 28-container Proxmo
 - **🔒 Security**: SWAG, Wireguard, Vaultwarden, RustDesk
 - **🏢 Business**: Odoo ERP, Paperless-ngx, Immich, File Server, Google Drive
 - **🔔 Communication**: ntfy notifications
+
+### Architecture Diagram
+
+> Full details in [`docs/architecture.md`](docs/architecture.md)
+
+```
+                        ┌─────────────────────────────────────┐
+                        │          Internet / WAN             │
+                        └──────────────────┬──────────────────┘
+                                           │
+                        ┌──────────────────▼──────────────────┐
+                        │            Router (192.168.0.1)      │
+                        └──────────┬──────────────┬───────────┘
+                                   │              │
+              ┌────────────────────▼─────┐   ┌────▼──────────────────────┐
+              │  vmbr0 · 192.168.0.0/24  │   │  vmbr1 · 10.10.10.0/24    │
+              │  (Primary network)       │   │  (VPN network)            │
+              └──────┬──────────┬────────┘   └──────┬────────────────────┘
+                     │          │                   │
+   ┌─────────────────▼─┐  ┌─────▼─────────────┐  ┌──▼──────────────────┐
+   │ 🔒 Security (4)   │  │ 🎬 Media (9)      │  │ VPN-routed traffic  │
+   │ ──────────────────│  │ ──────────────────│  │ ────────────────────│
+   │ SWAG (100)        │  │ Plex (120)        │  │ qBittorrent (107)   │
+   │ Wireguard (116)   │  │ Sonarr (112)      │  │ Prowlarr (108)      │
+   │ Vaultwarden (104) │  │ Radarr (113)      │  │ Wireguard GW (116)  │
+   │ RustDesk (103)    │  │ Lidarr (121)      │  └─────────────────────┘
+   │                   │  │ Overseerr (114)   │
+   └─────────┬─────────┘  │ FlareSolverr (115)│
+             │            │ AutoBrr (118)     │
+             │            │ qBittorrent (107) │
+             │            │ Prowlarr (108)    │
+             │            └─────────┬─────────┘
+             │                      │
+             │   ┌──────────────────▼──────────────────┐
+             │   │ 📊 Monitoring & Observability (9)   │
+             │   │ ─────────────────────────────────── │
+             │   │ Grafana (110) · Prometheus (109)    │
+             │   │ Loki (130) · AlertManager (131)     │
+             │   │ Blackbox (132) · Promtail (133)     │
+             │   │ Uptime Kuma (123) · Glance (119)    │
+             │   │ PVE Exporter (106)                  │
+             │   └──────────────────┬──────────────────┘
+             │                      │
+   ┌─────────▼──────────────────────▼──────────────────────────┐
+   │ 🏢 Business & Storage (8)                                 │
+   │ ───────────────────────────────────────────────────────── │
+   │ Immich (105) · Immich Backup (117) · File Server (102)    │
+   │ Paperless-ngx (128) · Odoo (125) · Google Drive (101)     │
+   │ Docker Host (111) · ntfy (124)                            │
+   └──────────────────────────┬───────────────────────────────┘
+                              │
+   ┌──────────────────────────▼───────────────────────────────┐
+   │ 🗄️ Storage: ZFS · local-lvm · data (/data 10T) ·         │
+   │             vault (/docker 128G) · backups               │
+   └──────────────────────────────────────────────────────────┘
+```
+
+**Flow**: Internet → SWAG reverse proxy → per-category LXC containers on `vmbr0`; torrent traffic (qBittorrent, Prowlarr) is isolated on `vmbr1` and routed through the Wireguard VPN. All 28 containers are provisioned by Terraform (`terraform/`) and configured by Ansible (`ansible/`), with metrics/logs aggregated by the monitoring stack.
 
 ### Technology Stack
 - **Virtualization**: Proxmox VE 8.14 on Linux 6.14.8-2-pve
@@ -47,30 +107,37 @@ Infrastructure as Code (IaC) and GitOps implementation for a 28-container Proxmo
 
 ```
 homelab-gitops/
-├── terraform/                 # Infrastructure as Code
+├── LICENSE                    # MIT License
+├── Makefile                   # Common automation tasks
+├── scripts/                   # Validation scripts
+├── docs/                      # Architecture & deployment docs
+│   ├── architecture.md        # Full architecture overview
+│   ├── container-mapping.md   # Container → GitOps mapping
+│   ├── deployment-guide.md    # Deployment guide
+│   └── advanced-monitoring.md # Monitoring/observability stack
+├── terraform/                 # Infrastructure as Code (HCL)
 │   ├── providers.tf           # Proxmox provider configuration
 │   ├── variables.tf           # Global variables
 │   ├── containers/            # Container definitions by category
 │   │   ├── media-stack.tf     # Media services (Plex, Sonarr, etc.)
-│   │   ├── monitoring.tf      # Grafana, Prometheus, Uptime Kuma
+│   │   ├── monitoring.tf      # Grafana, Prometheus, Loki, etc.
 │   │   ├── security.tf        # SWAG, Wireguard, Vaultwarden
-│   │   └── business.tf        # Odoo, Paperless-ngx
+│   │   └── business.tf        # Odoo, Paperless-ngx, Immich
 │   └── modules/               # Reusable Terraform modules
-│       ├── lxc-container/     # Standard LXC container module
-│       └── firewall-rules/    # Firewall configuration module
+│       └── lxc-container/     # Standard LXC container module
 ├── ansible/                   # Configuration management
+│   ├── ansible.cfg            # Ansible configuration
 │   ├── inventory/             # Host inventories
 │   ├── playbooks/             # Deployment playbooks
 │   ├── roles/                 # Reusable roles
-│   └── group_vars/            # Group-specific variables
-├── configs/                   # Application configurations
-│   ├── docker-compose/        # Docker Compose files
-│   ├── firewall/              # Firewall rules
-│   └── monitoring/            # Monitoring configurations
+│   ├── group_vars/            # Group-specific variables
+│   └── tasks/                 # Task includes
 └── .github/workflows/         # CI/CD automation
-    ├── terraform-plan.yml     # Infrastructure planning
-    ├── terraform-apply.yml    # Infrastructure deployment
-    └── ansible-deploy.yml     # Configuration deployment
+    ├── ci.yml                 # PR/push validation (Terraform + Ansible)
+    ├── terraform-validate.yml # Terraform validation
+    ├── ansible-lint.yml       # Ansible linting
+    ├── drift-detection.yml    # Scheduled drift detection
+    └── deploy.yml             # Manual deploy workflow
 ```
 
 ## 🔧 Getting Started
@@ -137,3 +204,9 @@ Real-time iPhone notifications via ntfy server:
 ---
 
 > **Homelab Philosophy**: Embrace Infrastructure as Code principles while maintaining the flexibility and learning opportunities that make homelab environments special. This GitOps approach provides enterprise-grade automation without sacrificing the ability to experiment and grow.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE) — see the [LICENSE](LICENSE) file for details.
