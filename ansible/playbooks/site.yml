@@ -42,13 +42,15 @@
       include_tasks: ../tasks/prometheus.yml
       when: "'prometheus' in services"
 
-    - name: Configure Grafana
-      include_tasks: ../tasks/grafana.yml
-      when: "'grafana-server' in services"
+    # TODO: task files not yet committed — enable once ../tasks/grafana.yml lands
+    # - name: Configure Grafana
+    #   include_tasks: ../tasks/grafana.yml
+    #   when: "'grafana-server' in services"
 
-    - name: Configure Uptime Kuma
-      include_tasks: ../tasks/uptimekuma.yml
-      when: "'uptime-kuma' in services"
+    # TODO: task files not yet committed — enable once ../tasks/uptimekuma.yml lands
+    # - name: Configure Uptime Kuma
+    #   include_tasks: ../tasks/uptimekuma.yml
+    #   when: "'uptime-kuma' in services"
 
   tags:
     - monitoring
@@ -61,17 +63,20 @@
     - docker
 
   tasks:
-    - name: Configure SWAG
-      include_tasks: ../tasks/swag.yml
-      when: "'nginx' in services"
+    # TODO: task files not yet committed — enable once ../tasks/swag.yml lands
+    # - name: Configure SWAG
+    #   include_tasks: ../tasks/swag.yml
+    #   when: "'nginx' in services"
 
-    - name: Configure WireGuard
-      include_tasks: ../tasks/wireguard.yml
-      when: "'wireguard' in services"
+    # TODO: task files not yet committed — enable once ../tasks/wireguard.yml lands
+    # - name: Configure WireGuard
+    #   include_tasks: ../tasks/wireguard.yml
+    #   when: "'wireguard' in services"
 
-    - name: Configure Vaultwarden
-      include_tasks: ../tasks/vaultwarden.yml
-      when: "'vaultwarden' in services"
+    # TODO: task files not yet committed — enable once ../tasks/vaultwarden.yml lands
+    # - name: Configure Vaultwarden
+    #   include_tasks: ../tasks/vaultwarden.yml
+    #   when: "'vaultwarden' in services"
 
   tags:
     - security
@@ -84,25 +89,26 @@
     - docker
 
   tasks:
-    - name: Configure Immich
-      include_tasks: ../tasks/immich.yml
-      when: "'immich-server' in services"
-
-    - name: Configure Paperless-ngx
-      include_tasks: ../tasks/paperless.yml
-      when: "'paperless-ngx' in services"
-
-    - name: Configure Odoo
-      include_tasks: ../tasks/odoo.yml
-      when: "'odoo' in services"
-
-    - name: Configure file server
-      include_tasks: ../tasks/fileserver.yml
-      when: "'cockpit' in services or 'samba' in services"
-
-    - name: Configure ntfy
-      include_tasks: ../tasks/ntfy.yml
-      when: "'ntfy' in services"
+    # TODO: task files not yet committed — enable once task files land
+    # - name: Configure Immich
+    #   include_tasks: ../tasks/immich.yml
+    #   when: "'immich-server' in services"
+    #
+    # - name: Configure Paperless-ngx
+    #   include_tasks: ../tasks/paperless.yml
+    #   when: "'paperless-ngx' in services"
+    #
+    # - name: Configure Odoo
+    #   include_tasks: ../tasks/odoo.yml
+    #   when: "'odoo' in services"
+    #
+    # - name: Configure file server
+    #   include_tasks: ../tasks/fileserver.yml
+    #   when: "'cockpit' in services or 'samba' in services"
+    #
+    # - name: Configure ntfy
+    #   include_tasks: ../tasks/ntfy.yml
+    #   when: "'ntfy' in services"
 
   tags:
     - business
