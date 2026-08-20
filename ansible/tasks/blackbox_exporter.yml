@@ -2,15 +2,15 @@
 ---
 
 - name: Create blackbox_exporter user
-  user:
+  ansible.builtin.user:
     name: blackbox_exporter
-    system: yes
+    system: true
     shell: /bin/false
     home: /var/lib/blackbox_exporter
-    create_home: yes
+    create_home: true
 
 - name: Create blackbox_exporter directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: blackbox_exporter
@@ -21,28 +21,28 @@
     - /var/lib/blackbox_exporter
 
 - name: Download Blackbox Exporter
-  get_url:
+  ansible.builtin.get_url:
     url: "https://github.com/prometheus/blackbox_exporter/releases/download/v{{ blackbox_exporter.version }}/blackbox_exporter-{{ blackbox_exporter.version }}.linux-amd64.tar.gz"
     dest: /tmp/blackbox_exporter.tar.gz
     mode: '0644'
 
 - name: Extract Blackbox Exporter
-  unarchive:
+  ansible.builtin.unarchive:
     src: /tmp/blackbox_exporter.tar.gz
     dest: /tmp
-    remote_src: yes
+    remote_src: true
 
 - name: Install Blackbox Exporter binary
-  copy:
+  ansible.builtin.copy:
     src: "/tmp/blackbox_exporter-{{ blackbox_exporter.version }}.linux-amd64/blackbox_exporter"
     dest: /usr/local/bin/blackbox_exporter
     owner: root
     group: root
     mode: '0755'
-    remote_src: yes
+    remote_src: true
 
 - name: Create Blackbox Exporter configuration
-  template:
+  ansible.builtin.template:
     src: blackbox.yml.j2
     dest: /etc/blackbox_exporter/blackbox.yml
     owner: blackbox_exporter
@@ -51,21 +51,21 @@
   notify: restart blackbox_exporter
 
 - name: Create Blackbox Exporter systemd service
-  template:
+  ansible.builtin.template:
     src: blackbox_exporter.service.j2
     dest: /etc/systemd/system/blackbox_exporter.service
     mode: '0644'
   notify: restart blackbox_exporter
 
 - name: Start and enable Blackbox Exporter
-  systemd:
+  ansible.builtin.systemd:
     name: blackbox_exporter
-    enabled: yes
+    enabled: true
     state: started
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Clean up downloaded files
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:

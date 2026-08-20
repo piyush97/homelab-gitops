@@ -2,22 +2,22 @@
 ---
 - name: Configure all containers
   hosts: all
-  become: yes
-  
+  become: true
+
   roles:
     - common
-    
+
   tags:
     - base
     - common
 
 - name: Configure media stack
   hosts: media
-  become: yes
-  
+  become: true
+
   roles:
     - docker
-    
+
   vars:
     # Media-specific Docker configuration
     docker:
@@ -25,84 +25,54 @@
       compose_version: "{{ docker.compose_version }}"
       data_root: "{{ docker_mount }}"
       daemon: "{{ docker.daemon }}"
-      
+
   tags:
     - media
     - docker
 
-- name: Configure monitoring stack  
+- name: Configure monitoring stack
   hosts: monitoring
-  become: yes
-  
+  become: true
+
   roles:
     - monitoring
-  
+
   tasks:
     - name: Configure Prometheus
-      include_tasks: ../tasks/prometheus.yml
+      ansible.builtin.include_tasks: ../tasks/prometheus.yml
       when: "'prometheus' in services"
-      
-    - name: Configure Grafana
-      include_tasks: ../tasks/grafana.yml
-      when: "'grafana-server' in services"
-      
-    - name: Configure Uptime Kuma
-      include_tasks: ../tasks/uptimekuma.yml  
-      when: "'uptime-kuma' in services"
-      
+
+  # TODO: Grafana / Uptime Kuma task files not yet committed.
+  # Add here once ../tasks/grafana.yml and ../tasks/uptimekuma.yml land.
+
   tags:
     - monitoring
 
 - name: Configure security stack
   hosts: security
-  become: yes
-  
+  become: true
+
   roles:
     - docker
-    
+
   tasks:
-    - name: Configure SWAG
-      include_tasks: ../tasks/swag.yml
-      when: "'nginx' in services"
-      
-    - name: Configure WireGuard
-      include_tasks: ../tasks/wireguard.yml
-      when: "'wireguard' in services"
-      
-    - name: Configure Vaultwarden
-      include_tasks: ../tasks/vaultwarden.yml
-      when: "'vaultwarden' in services"
-      
+  # TODO: SWAG / WireGuard / Vaultwarden task files not yet committed.
+  # Add here once ../tasks/swag.yml, ../tasks/wireguard.yml, and
+  # ../tasks/vaultwarden.yml land.
+
   tags:
     - security
 
 - name: Configure business applications
   hosts: business
-  become: yes
-  
+  become: true
+
   roles:
     - docker
-    
+
   tasks:
-    - name: Configure Immich
-      include_tasks: ../tasks/immich.yml
-      when: "'immich-server' in services"
-      
-    - name: Configure Paperless-ngx
-      include_tasks: ../tasks/paperless.yml
-      when: "'paperless-ngx' in services"
-      
-    - name: Configure Odoo
-      include_tasks: ../tasks/odoo.yml
-      when: "'odoo' in services"
-      
-    - name: Configure file server
-      include_tasks: ../tasks/fileserver.yml
-      when: "'cockpit' in services or 'samba' in services"
-      
-    - name: Configure ntfy
-      include_tasks: ../tasks/ntfy.yml
-      when: "'ntfy' in services"
-      
+  # TODO: Immich / Paperless-ngx / Odoo / file server / ntfy task files not
+  # yet committed. Add here once the ../tasks/*.yml files land.
+
   tags:
     - business

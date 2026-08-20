@@ -2,15 +2,15 @@
 ---
 
 - name: Create promtail user
-  user:
+  ansible.builtin.user:
     name: promtail
-    system: yes
+    system: true
     shell: /bin/false
     home: /var/lib/promtail
-    create_home: yes
+    create_home: true
 
 - name: Create promtail directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: promtail
@@ -22,28 +22,28 @@
     - /var/lib/promtail/positions
 
 - name: Download Promtail
-  get_url:
+  ansible.builtin.get_url:
     url: "https://github.com/grafana/loki/releases/download/v{{ promtail.version }}/promtail-linux-amd64.zip"
     dest: /tmp/promtail.zip
     mode: '0644'
 
 - name: Extract Promtail
-  unarchive:
+  ansible.builtin.unarchive:
     src: /tmp/promtail.zip
     dest: /tmp
-    remote_src: yes
+    remote_src: true
 
 - name: Install Promtail binary
-  copy:
+  ansible.builtin.copy:
     src: /tmp/promtail-linux-amd64
     dest: /usr/local/bin/promtail
     owner: root
     group: root
     mode: '0755'
-    remote_src: yes
+    remote_src: true
 
 - name: Create Promtail configuration
-  template:
+  ansible.builtin.template:
     src: promtail.yml.j2
     dest: /etc/promtail/promtail.yml
     owner: promtail
@@ -52,21 +52,21 @@
   notify: restart promtail
 
 - name: Create Promtail systemd service
-  template:
+  ansible.builtin.template:
     src: promtail.service.j2
     dest: /etc/systemd/system/promtail.service
     mode: '0644'
   notify: restart promtail
 
 - name: Start and enable Promtail
-  systemd:
+  ansible.builtin.systemd:
     name: promtail
-    enabled: yes
+    enabled: true
     state: started
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Clean up downloaded files
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:

@@ -2,15 +2,15 @@
 ---
 
 - name: Create loki user
-  user:
+  ansible.builtin.user:
     name: loki
-    system: yes
+    system: true
     shell: /bin/false
     home: /var/lib/loki
-    create_home: yes
+    create_home: true
 
 - name: Create loki directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: loki
@@ -24,28 +24,28 @@
     - /loki/boltdb-shipper-cache
 
 - name: Download Loki
-  get_url:
+  ansible.builtin.get_url:
     url: "https://github.com/grafana/loki/releases/download/v{{ loki.version }}/loki-linux-amd64.zip"
     dest: /tmp/loki.zip
     mode: '0644'
 
 - name: Extract Loki
-  unarchive:
+  ansible.builtin.unarchive:
     src: /tmp/loki.zip
     dest: /tmp
-    remote_src: yes
+    remote_src: true
 
 - name: Install Loki binary
-  copy:
+  ansible.builtin.copy:
     src: /tmp/loki-linux-amd64
     dest: /usr/local/bin/loki
     owner: root
     group: root
     mode: '0755'
-    remote_src: yes
+    remote_src: true
 
 - name: Create Loki configuration
-  template:
+  ansible.builtin.template:
     src: loki.yml.j2
     dest: /etc/loki/loki.yml
     owner: loki
@@ -54,21 +54,21 @@
   notify: restart loki
 
 - name: Create Loki systemd service
-  template:
+  ansible.builtin.template:
     src: loki.service.j2
     dest: /etc/systemd/system/loki.service
     mode: '0644'
   notify: restart loki
 
 - name: Start and enable Loki
-  systemd:
+  ansible.builtin.systemd:
     name: loki
-    enabled: yes
+    enabled: true
     state: started
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Clean up downloaded files
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:

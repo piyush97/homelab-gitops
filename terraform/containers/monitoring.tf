@@ -17,34 +17,34 @@ locals {
 # Grafana Dashboard Server (Container 110)
 module "grafana" {
   source = "../modules/lxc-container"
-  
+
   # Basic Configuration
   target_node = var.target_node
   vmid        = 110
   hostname    = "grafana"
-  
+
   # Resources
   memory    = 1024
   cores     = 1
   disk_size = "12G"
   swap      = 512
-  
+
   # Template - Debian 13 (Trixie)
   template = "debian-13-standard_13.0-1_amd64.tar.zst"
-  
+
   # Security
   privileged = false
   onboot     = true
-  
+
   # Features
   features = {
     nesting = true
     mount   = ""
   }
-  
+
   # Storage Mounts
   mount_points = local.monitoring_mounts
-  
+
   # Network
   networks = [
     {
@@ -55,11 +55,11 @@ module "grafana" {
       firewall = true
     }
   ]
-  
+
   # Organization
   service_category = "monitoring"
-  tags            = ["dashboards", "visualization", "metrics"]
-  
+  tags             = ["dashboards", "visualization", "metrics"]
+
   # Firewall
   enable_firewall = true
   firewall_rules = [
@@ -82,32 +82,32 @@ module "grafana" {
 # Alpine Prometheus (Container 109)
 module "alpine_prometheus" {
   source = "../modules/lxc-container"
-  
+
   # Basic Configuration
   target_node = var.target_node
   vmid        = 109
   hostname    = "alpine-prometheus"
-  
+
   # Resources
   memory    = 256
   cores     = 1
   disk_size = "1G"
   swap      = 128
-  
+
   # Template - Alpine 3.22.1
   template = "alpine-3.22-default_20240606_amd64.tar.xz"
   ostype   = "alpine"
-  
+
   # Security
   privileged = false
   onboot     = true
-  
+
   # Features
   features = {
     nesting = true
     mount   = ""
   }
-  
+
   # Network
   networks = [
     {
@@ -118,11 +118,11 @@ module "alpine_prometheus" {
       firewall = false
     }
   ]
-  
+
   # Organization
   service_category = "monitoring"
-  tags            = ["metrics", "lightweight", "alpine"]
-  
+  tags             = ["metrics", "lightweight", "alpine"]
+
   # Firewall
   enable_firewall = false
 }
@@ -130,31 +130,31 @@ module "alpine_prometheus" {
 # Proxmox VE Exporter (Container 106)
 module "prometheus_pve_exporter" {
   source = "../modules/lxc-container"
-  
+
   # Basic Configuration
   target_node = var.target_node
   vmid        = 106
   hostname    = "prometheus-pve-exporter"
-  
+
   # Resources
   memory    = 512
   cores     = 1
   disk_size = "2G"
   swap      = 256
-  
+
   # Template - Debian 13 (Trixie)
   template = "debian-13-standard_13.0-1_amd64.tar.zst"
-  
+
   # Security
   privileged = false
   onboot     = true
-  
+
   # Features
   features = {
     nesting = true
     mount   = ""
   }
-  
+
   # Network
   networks = [
     {
@@ -165,11 +165,11 @@ module "prometheus_pve_exporter" {
       firewall = false
     }
   ]
-  
+
   # Organization
   service_category = "monitoring"
-  tags            = ["metrics", "proxmox", "exporter"]
-  
+  tags             = ["metrics", "proxmox", "exporter"]
+
   # Firewall
   enable_firewall = false
 }
@@ -177,31 +177,31 @@ module "prometheus_pve_exporter" {
 # Uptime Kuma Service Monitoring (Container 123)
 module "uptimekuma" {
   source = "../modules/lxc-container"
-  
+
   # Basic Configuration
   target_node = var.target_node
   vmid        = 123
   hostname    = "uptimekuma"
-  
+
   # Resources
   memory    = 512
   cores     = 1
   disk_size = "4G"
   swap      = 256
-  
+
   # Template - Debian 13 (Trixie)
   template = "debian-13-standard_13.0-1_amd64.tar.zst"
-  
+
   # Security
   privileged = false
   onboot     = true
-  
+
   # Features
   features = {
     nesting = true
     mount   = ""
   }
-  
+
   # Network
   networks = [
     {
@@ -212,11 +212,11 @@ module "uptimekuma" {
       firewall = true
     }
   ]
-  
+
   # Organization
   service_category = "monitoring"
-  tags            = ["uptime", "health-checks", "alerting"]
-  
+  tags             = ["uptime", "health-checks", "alerting"]
+
   # Firewall
   enable_firewall = true
   firewall_rules = [
@@ -239,31 +239,31 @@ module "uptimekuma" {
 # Glance Dashboard (Container 119) 
 module "glance" {
   source = "../modules/lxc-container"
-  
+
   # Basic Configuration
   target_node = var.target_node
   vmid        = 119
   hostname    = "glance"
-  
+
   # Resources
   memory    = 512
   cores     = 1
   disk_size = "2G"
   swap      = 512
-  
+
   # Template - Debian 13 (Trixie)
   template = "debian-13-standard_13.0-1_amd64.tar.zst"
-  
+
   # Security
   privileged = false
   onboot     = true
-  
+
   # Features
   features = {
     nesting = true
     mount   = ""
   }
-  
+
   # Network
   networks = [
     {
@@ -274,11 +274,11 @@ module "glance" {
       firewall = false
     }
   ]
-  
+
   # Organization
   service_category = "monitoring"
-  tags            = ["dashboard", "homelab", "frontend"]
-  
+  tags             = ["dashboard", "homelab", "frontend"]
+
   # Firewall
   enable_firewall = false
 }
@@ -286,34 +286,34 @@ module "glance" {
 # Loki Log Aggregation (Container 130)
 module "loki" {
   source = "../modules/lxc-container"
-  
+
   # Basic Configuration
   target_node = var.target_node
   vmid        = 130
   hostname    = "loki"
-  
+
   # Resources
   memory    = 2048
   cores     = 2
   disk_size = "8G"
   swap      = 1024
-  
+
   # Template - Debian 13 (Trixie)
   template = "debian-13-standard_13.0-1_amd64.tar.zst"
-  
+
   # Security
   privileged = false
   onboot     = true
-  
+
   # Features
   features = {
     nesting = true
     mount   = ""
   }
-  
+
   # Storage Mounts
   mount_points = local.monitoring_mounts
-  
+
   # Network
   networks = [
     {
@@ -324,11 +324,11 @@ module "loki" {
       firewall = true
     }
   ]
-  
+
   # Organization
   service_category = "monitoring"
-  tags            = ["logs", "aggregation", "loki"]
-  
+  tags             = ["logs", "aggregation", "loki"]
+
   # Firewall
   enable_firewall = true
   firewall_rules = [
@@ -364,34 +364,34 @@ module "loki" {
 # AlertManager Alerting (Container 131)
 module "alertmanager" {
   source = "../modules/lxc-container"
-  
+
   # Basic Configuration
   target_node = var.target_node
   vmid        = 131
   hostname    = "alertmanager"
-  
+
   # Resources
   memory    = 512
   cores     = 1
   disk_size = "4G"
   swap      = 256
-  
+
   # Template - Debian 13 (Trixie)
   template = "debian-13-standard_13.0-1_amd64.tar.zst"
-  
+
   # Security
   privileged = false
   onboot     = true
-  
+
   # Features
   features = {
     nesting = true
     mount   = ""
   }
-  
+
   # Storage Mounts
   mount_points = local.monitoring_mounts
-  
+
   # Network
   networks = [
     {
@@ -402,11 +402,11 @@ module "alertmanager" {
       firewall = true
     }
   ]
-  
+
   # Organization
   service_category = "monitoring"
-  tags            = ["alerting", "notifications", "alertmanager"]
-  
+  tags             = ["alerting", "notifications", "alertmanager"]
+
   # Firewall
   enable_firewall = true
   firewall_rules = [
@@ -442,32 +442,32 @@ module "alertmanager" {
 # Blackbox Exporter External Monitoring (Container 132)
 module "blackbox_exporter" {
   source = "../modules/lxc-container"
-  
+
   # Basic Configuration
   target_node = var.target_node
   vmid        = 132
   hostname    = "blackbox-exporter"
-  
+
   # Resources
   memory    = 256
   cores     = 1
   disk_size = "2G"
   swap      = 128
-  
+
   # Template - Alpine 3.22.1 (Lightweight)
   template = "alpine-3.22-default_20240606_amd64.tar.xz"
   ostype   = "alpine"
-  
+
   # Security
   privileged = false
   onboot     = true
-  
+
   # Features
   features = {
     nesting = true
     mount   = ""
   }
-  
+
   # Network
   networks = [
     {
@@ -478,11 +478,11 @@ module "blackbox_exporter" {
       firewall = true
     }
   ]
-  
+
   # Organization
   service_category = "monitoring"
-  tags            = ["external-monitoring", "blackbox", "alpine"]
-  
+  tags             = ["external-monitoring", "blackbox", "alpine"]
+
   # Firewall
   enable_firewall = true
   firewall_rules = [
@@ -505,32 +505,32 @@ module "blackbox_exporter" {
 # Promtail Log Shipping (Container 133)
 module "promtail" {
   source = "../modules/lxc-container"
-  
+
   # Basic Configuration
   target_node = var.target_node
   vmid        = 133
   hostname    = "promtail"
-  
+
   # Resources
   memory    = 512
   cores     = 1
   disk_size = "4G"
   swap      = 256
-  
+
   # Template - Alpine 3.22.1 (Lightweight)
   template = "alpine-3.22-default_20240606_amd64.tar.xz"
   ostype   = "alpine"
-  
+
   # Security
   privileged = false
   onboot     = true
-  
+
   # Features
   features = {
     nesting = true
     mount   = ""
   }
-  
+
   # Network
   networks = [
     {
@@ -541,11 +541,11 @@ module "promtail" {
       firewall = false
     }
   ]
-  
+
   # Organization
   service_category = "monitoring"
-  tags            = ["log-shipping", "promtail", "alpine"]
-  
+  tags             = ["log-shipping", "promtail", "alpine"]
+
   # Firewall
   enable_firewall = false
 }

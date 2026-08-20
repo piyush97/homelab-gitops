@@ -1,7 +1,7 @@
 groups:
 - name: homelab.rules
   rules:
-  
+
   # Node/Infrastructure alerts
   - alert: HostOutOfMemory
     expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10

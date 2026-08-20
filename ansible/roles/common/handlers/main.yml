@@ -2,19 +2,19 @@
 ---
 
 - name: restart ssh
-  systemd:
+  ansible.builtin.systemd:
     name: ssh
     state: restarted
   listen: restart ssh
 
 - name: restart node_exporter
-  systemd:
+  ansible.builtin.systemd:
     name: node_exporter
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
   listen: restart node_exporter
 
 - name: reload systemd
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
   listen: reload systemd

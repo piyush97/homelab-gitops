@@ -119,7 +119,7 @@ variable "default_disk_size" {
 }
 
 variable "default_swap" {
-  description = "Default swap size (MB)"  
+  description = "Default swap size (MB)"
   type        = number
   default     = 512
 }
@@ -128,33 +128,33 @@ variable "default_swap" {
 variable "media_containers" {
   description = "Media stack container configurations"
   type = map(object({
-    vmid        = number
-    hostname    = string
-    memory      = number
-    cores       = number
-    disk        = string
-    swap        = number
-    ip_address  = string
-    template    = string
-    privileged  = bool
-    onboot      = bool
+    vmid       = number
+    hostname   = string
+    memory     = number
+    cores      = number
+    disk       = string
+    swap       = number
+    ip_address = string
+    template   = string
+    privileged = bool
+    onboot     = bool
     features = object({
       nesting = bool
       mount   = string
     })
     mounts = list(object({
       key     = string
-      slot    = number  
+      slot    = number
       storage = string
       mp      = string
       size    = string
     }))
     networks = list(object({
-      name      = string
-      bridge    = string
-      ip        = string
-      gw        = string
-      firewall  = bool
+      name     = string
+      bridge   = string
+      ip       = string
+      gw       = string
+      firewall = bool
     }))
   }))
   default = {}
@@ -163,16 +163,16 @@ variable "media_containers" {
 variable "monitoring_containers" {
   description = "Monitoring stack container configurations"
   type = map(object({
-    vmid        = number
-    hostname    = string
-    memory      = number
-    cores       = number
-    disk        = string
-    swap        = number
-    ip_address  = string
-    template    = string
-    privileged  = bool
-    onboot      = bool
+    vmid       = number
+    hostname   = string
+    memory     = number
+    cores      = number
+    disk       = string
+    swap       = number
+    ip_address = string
+    template   = string
+    privileged = bool
+    onboot     = bool
   }))
   default = {}
 }
@@ -180,16 +180,16 @@ variable "monitoring_containers" {
 variable "security_containers" {
   description = "Security stack container configurations"
   type = map(object({
-    vmid        = number
-    hostname    = string
-    memory      = number
-    cores       = number
-    disk        = string
-    swap        = number
-    ip_address  = string
-    template    = string
-    privileged  = bool
-    onboot      = bool
+    vmid       = number
+    hostname   = string
+    memory     = number
+    cores      = number
+    disk       = string
+    swap       = number
+    ip_address = string
+    template   = string
+    privileged = bool
+    onboot     = bool
   }))
   default = {}
 }

@@ -2,15 +2,15 @@
 ---
 
 - name: Create alertmanager user
-  user:
+  ansible.builtin.user:
     name: alertmanager
-    system: yes
+    system: true
     shell: /bin/false
     home: /var/lib/alertmanager
-    create_home: yes
+    create_home: true
 
 - name: Create alertmanager directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: alertmanager
@@ -22,31 +22,31 @@
     - /var/lib/alertmanager/data
 
 - name: Download AlertManager
-  get_url:
+  ansible.builtin.get_url:
     url: "https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager.version }}/alertmanager-{{ alertmanager.version }}.linux-amd64.tar.gz"
     dest: /tmp/alertmanager.tar.gz
     mode: '0644'
 
 - name: Extract AlertManager
-  unarchive:
+  ansible.builtin.unarchive:
     src: /tmp/alertmanager.tar.gz
     dest: /tmp
-    remote_src: yes
+    remote_src: true
 
 - name: Install AlertManager binaries
-  copy:
+  ansible.builtin.copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: root
     group: root
     mode: '0755'
-    remote_src: yes
+    remote_src: true
   with_items:
     - { src: "/tmp/alertmanager-{{ alertmanager.version }}.linux-amd64/alertmanager", dest: "/usr/local/bin/alertmanager" }
     - { src: "/tmp/alertmanager-{{ alertmanager.version }}.linux-amd64/amtool", dest: "/usr/local/bin/amtool" }
 
 - name: Create AlertManager configuration
-  template:
+  ansible.builtin.template:
     src: alertmanager.yml.j2
     dest: /etc/alertmanager/alertmanager.yml
     owner: alertmanager
@@ -55,21 +55,21 @@
   notify: restart alertmanager
 
 - name: Create AlertManager systemd service
-  template:
+  ansible.builtin.template:
     src: alertmanager.service.j2
     dest: /etc/systemd/system/alertmanager.service
     mode: '0644'
   notify: restart alertmanager
 
 - name: Start and enable AlertManager
-  systemd:
+  ansible.builtin.systemd:
     name: alertmanager
-    enabled: yes
+    enabled: true
     state: started
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Clean up downloaded files
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:

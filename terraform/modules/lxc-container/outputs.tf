@@ -54,7 +54,7 @@ output "ip_addresses" {
 
 output "mount_points" {
   description = "Container mount points"
-  value = var.mount_points
+  value       = var.mount_points
 }
 
 output "unprivileged" {
@@ -86,15 +86,15 @@ output "service_category" {
 output "ansible_host_vars" {
   description = "Ansible host variables"
   value = {
-    ansible_host = length(var.networks) > 0 ? split("/", var.networks[0].ip)[0] : null
-    hostname     = var.hostname
-    vmid         = var.vmid
-    memory       = var.memory
-    cores        = var.cores
+    ansible_host     = length(var.networks) > 0 ? split("/", var.networks[0].ip)[0] : null
+    hostname         = var.hostname
+    vmid             = var.vmid
+    memory           = var.memory
+    cores            = var.cores
     service_category = var.service_category
-    privileged   = var.privileged
-    mount_points = var.mount_points
-    networks     = var.networks
+    privileged       = var.privileged
+    mount_points     = var.mount_points
+    networks         = var.networks
   }
 }
 
@@ -102,16 +102,16 @@ output "ansible_host_vars" {
 output "container_summary" {
   description = "Container summary for documentation"
   value = {
-    vmid            = var.vmid
-    hostname        = var.hostname
+    vmid             = var.vmid
+    hostname         = var.hostname
     service_category = var.service_category
-    memory          = "${var.memory}MB"
-    cores           = var.cores
-    disk            = var.disk_size
-    primary_ip      = length(var.networks) > 0 ? var.networks[0].ip : "DHCP"
-    privileged      = var.privileged ? "Yes" : "No"
-    onboot          = var.onboot ? "Yes" : "No"
-    firewall        = var.enable_firewall ? "Enabled" : "Disabled"
-    template        = var.template
+    memory           = "${var.memory}MB"
+    cores            = var.cores
+    disk             = var.disk_size
+    primary_ip       = length(var.networks) > 0 ? var.networks[0].ip : "DHCP"
+    privileged       = var.privileged ? "Yes" : "No"
+    onboot           = var.onboot ? "Yes" : "No"
+    firewall         = var.enable_firewall ? "Enabled" : "Disabled"
+    template         = var.template
   }
 }
