@@ -1,0 +1,28 @@
+---
+extends: default
+
+# Prometheus rules and other non-Ansible artifacts are deployed as-is;
+# they are validated by Prometheus itself, not Ansible lint.
+ignore: |
+  roles/monitoring/files/
+
+rules:
+  # Ansible playbooks legitimately contain long lines (URLs, shell commands, Jinja2 templates)
+  line-length:
+    max: 160
+    level: warning
+
+  # Ansible files don't require a document start marker
+  document-start: disable
+
+  # Allow boolean values as keys (e.g. enabled: true) in task files
+  truthy:
+    check-keys: true
+
+  # Allow single-space padding inside braces in Jinja2 templates like {{ var }}
+  braces:
+    max-spaces-inside: 1
+    level: warning
+  brackets:
+    max-spaces-inside: 1
+    level: warning

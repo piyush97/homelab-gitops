@@ -11,10 +11,10 @@ swag:
   domain: "piyushmehta.com"
   subdomains:
     - "notifications"
-    - "immich" 
+    - "immich"
     - "plex"
     - "grafana"
-  
+
   # Reverse proxy configurations
   proxy_confs:
     - service: "ntfy"
@@ -40,24 +40,24 @@ wireguard:
   dns_servers:
     - "1.1.1.1"
     - "1.0.0.1"
-  
+
   # Client configurations
   clients:
     - name: "phone"
       ip: "10.10.10.100"
       public_key: "" # Set via vault
-    - name: "laptop"  
+    - name: "laptop"
       ip: "10.10.10.101"
       public_key: "" # Set via vault
 
-# Vaultwarden (Bitwarden) configuration  
+# Vaultwarden (Bitwarden) configuration
 vaultwarden:
   version: "1.29.0-alpine"
   port: 8080
   database_url: "/data/db.sqlite3"
   admin_token: "" # Set via vault
   domain: "https://vault.piyushmehta.com"
-  
+
   # Security settings
   settings:
     signups_allowed: false
@@ -80,16 +80,16 @@ firewall_rules:
       source: "0.0.0.0/0"
       comment: "HTTP redirect"
     - port: 443
-      protocol: tcp  
+      protocol: tcp
       source: "0.0.0.0/0"
       comment: "HTTPS"
-      
+
   wireguard:
     - port: 51820
       protocol: udp
       source: "0.0.0.0/0"
       comment: "WireGuard VPN"
-      
+
   vaultwarden:
     - port: 8080
       protocol: tcp
@@ -101,7 +101,7 @@ ssl:
   provider: "letsencrypt"
   staging: false
   key_type: "rsa2048"
-  
+
 # Fail2Ban configuration (if enabled)
 fail2ban:
   enabled: false

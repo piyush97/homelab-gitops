@@ -6,7 +6,7 @@ immich:
   version: "v1.88.0"
   upload_location: "/data/immich/upload"
   library_location: "/data/immich/library"
-  
+
   # Database configuration
   database:
     type: "postgresql"
@@ -15,12 +15,12 @@ immich:
     name: "immich"
     user: "immich"
     password: "" # Set via vault
-  
+
   # Redis configuration
   redis:
     host: "immich_redis"
     port: 6379
-    
+
   # Machine learning
   machine_learning:
     enabled: true
@@ -32,7 +32,7 @@ fileserver:
   cockpit:
     port: 9090
     allowed_hosts: "192.168.0.0/24"
-    
+
   # Samba/SMB configuration
   samba:
     workgroup: "HOMELAB"
@@ -42,7 +42,7 @@ fileserver:
         read_only: false
         browseable: true
         valid_users: "samba"
-      - name: "documents" 
+      - name: "documents"
         path: "/data/documents"
         read_only: false
         browseable: true
@@ -57,7 +57,7 @@ fileserver:
 docker_host:
   version: "24.0.0"
   compose_version: "2.21.0"
-  
+
   # Docker daemon configuration
   daemon:
     log_driver: "json-file"
@@ -65,7 +65,7 @@ docker_host:
       max_size: "10m"
       max_file: "3"
     storage_driver: "overlay2"
-    
+
   # Network configuration
   networks:
     - name: "homelab"
@@ -76,7 +76,7 @@ docker_host:
 odoo:
   version: "16.0"
   port: 8069
-  
+
   # Database configuration
   database:
     host: "localhost"
@@ -84,7 +84,7 @@ odoo:
     name: "odoo"
     user: "odoo"
     password: "" # Set via vault
-    
+
   # Configuration
   config:
     addons_path: "/opt/odoo/addons"
@@ -96,17 +96,17 @@ odoo:
 paperless_ngx:
   version: "1.17.0"
   port: 8000
-  
+
   # Paths
   consume_dir: "/data/paperless/consume"
   data_dir: "/data/paperless/data"
   media_root: "/data/paperless/media"
-  
+
   # OCR configuration
   ocr:
     language: "eng"
     mode: "skip"
-    
+
   # Database configuration
   database:
     type: "postgresql"
@@ -123,20 +123,20 @@ google_drive:
     - "*.tmp"
     - ".DS_Store"
     - "Thumbs.db"
-  
+
 # ntfy notification server
 ntfy:
   port: 80
   base_url: "https://notifications.piyushmehta.com"
   cache_file: "/var/lib/ntfy/cache.db"
-  
+
   # Topics and access control
   topics:
     homelab-critical:
       read: "*"
       write: "192.168.0.0/24"
     homelab-warning:
-      read: "*" 
+      read: "*"
       write: "192.168.0.0/24"
     homelab-info:
       read: "*"
@@ -150,13 +150,13 @@ backup:
   enabled: true
   schedule:
     immich: "0 2 * * *"      # Daily 2 AM
-    fileserver: "0 2 * * *"  # Daily 2 AM  
+    fileserver: "0 2 * * *"  # Daily 2 AM
     paperless: "0 3 * * *"   # Daily 3 AM
     odoo: "0 3 * * *"        # Daily 3 AM
-    
+
   retention:
     critical: 7    # 7 days for critical services
     standard: 5    # 5 days for standard services
-    
+
   compression: "zstd"
   storage_path: "/vault/backups"
