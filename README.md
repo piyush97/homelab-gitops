@@ -13,6 +13,8 @@ Infrastructure as Code (IaC) and GitOps implementation for a 28-container Proxmo
 
 🔗 **Official Documentation**: [https://github.com/piyush97/homelab-docs](https://piyush97.github.io/homelab-docs)
 
+📝 **Related writing**: [My 12TB drive failed. ZFS saved 3.4TB of data](https://piyushmehta.com/blog/zfs-saved-my-data-seagate-warranty) · [From Nginx Proxy Manager to SWAG](https://piyushmehta.com/blog/migrating-nginx-proxy-manager-to-swag)
+
 ## 🏗️ Infrastructure
 
 ### Container Services (28 total)
