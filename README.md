@@ -15,82 +15,22 @@ Terraform and Ansible configuration for a Proxmox homelab. **The configuration i
 
 ## Infrastructure diagram
 
-Point-in-time view of the verified layout. Dashed arrows indicate logical paths; exact Caddy upstreams and storage mount protocol are not documented here.
+Full architecture generated with [Archify](https://github.com/tt-a1i/archify), based on the documented runtime snapshot and repository automation. Click the image for the full-resolution SVG.
 
-```mermaid
-flowchart TB
-    WAN((Internet)) --> ROUTER["Home Hub / router<br/>192.168.0.1"]
-    CLIENTS["LAN clients"] --> ROUTER
-    ROUTER -->|"LAN uplink"| BR
+[![Homelab architecture: Internet and LAN access, Proxmox networking, DNS, reverse proxy, VPN, storage, all 23 containers, and Terraform/Ansible automation](.archify/architecture-homelab-20261008-201746/homelab.svg)](.archify/architecture-homelab-20261008-201746/homelab.svg)
 
-    subgraph HOST["Proxmox VE · piyushmehta"]
-        BR["vmbr0 · 192.168.0.0/24"]
-        subgraph NETWORK["Network and operations"]
-            DNS["CT 105 · Pi-hole<br/>192.168.0.23 · DNS only"]
-            PROXY["CT 111 · Caddy<br/>192.168.0.97 · reverse proxy"]
-            VPN["CT 103 · WireGuard<br/>192.168.0.217 · tunnel 10.0.0.1/24"]
-            ROUTE["CT 113 · 9router<br/>192.168.0.45"]
-            MON["CT 114 · Monitoring<br/>DHCP address not recorded"]
-        end
-        subgraph APPS["Home, personal and data services"]
-            HA["CT 101 · Home Assistant<br/>192.168.0.132 · Docker"]
-            QD["CT 100 · Qdrant<br/>192.168.0.76"]
-            TRI["CT 106 · Trilium<br/>192.168.0.106"]
-            HERMES["CT 107 · Hermes Agent<br/>192.168.0.136"]
-            ACTUAL["CT 108 · Actual Budget<br/>192.168.0.247"]
-            MQTT["CT 110 · MQTT · DHCP"]
-            REDIS["CT 116 · Redis · DHCP"]
-            IMMICH["CT 117 · Immich<br/>192.168.0.111"]
-            PAPERLESS["CT 128 · Paperless-ngx<br/>192.168.0.36 · stopped"]
-            PAPERCLIP["CT 118 · Paperclip · stopped"]
-        end
-        subgraph MEDIA["Media services"]
-            JELLY["CT 104 · Jellyfin<br/>192.168.0.33"]
-            PLEX["CT 115 · Plex<br/>192.168.0.207"]
-            QBIT["CT 204 · qBittorrent<br/>192.168.0.43"]
-            AUTOBRR["CT 112 · autobrr · stopped"]
-            PROWLARR["CT 201 · Prowlarr<br/>192.168.0.40 · stopped"]
-            SONARR["CT 202 · Sonarr<br/>192.168.0.41 · stopped"]
-            RADARR["CT 203 · Radarr<br/>192.168.0.42 · stopped"]
-            SEERR["CT 205 · Seerr<br/>192.168.0.44 · stopped"]
-        end
-        ZFS["Local ZFS mirror<br/>2 × 12 TB · native SATA"]
-    end
+[Interactive diagram](.archify/architecture-homelab-20261008-201746/homelab.html) · [Editable diagram source](.archify/architecture-homelab-20261008-201746/candidate.json)
 
-    TRUENAS["TrueNAS · media storage"] -->|"mounted on Proxmox; passed through"| JELLY
-    BR --- DNS
-    BR --- PROXY
-    BR --- VPN
-    BR --- ROUTE
-    BR --- MON
-    BR --- HA
-    BR --- QD
-    BR --- TRI
-    BR --- HERMES
-    BR --- ACTUAL
-    BR --- MQTT
-    BR --- REDIS
-    BR --- IMMICH
-    BR --- PAPERLESS
-    BR --- PAPERCLIP
-    BR --- JELLY
-    BR --- PLEX
-    BR --- QBIT
-    BR --- AUTOBRR
-    BR --- PROWLARR
-    BR --- SONARR
-    BR --- RADARR
-    BR --- SEERR
-    CLIENTS -. "LAN DNS queries" .-> DNS
-    CLIENTS -. "reverse-proxy requests" .-> PROXY
-    VPN -. "tunnel peers" .-> PEERS["WireGuard network<br/>10.0.0.0/24"]
-    JELLY -. "transcodes" .-> VAULT["/vault"]
+Download the HTML and open it locally for zoom, search, source references, light/dark themes, and image exports. GitHub displays the SVG directly; it does not run the HTML viewer.
 
-    classDef stopped fill:#eee,stroke:#888,color:#666,stroke-dasharray: 5 5
-    class PAPERLESS,PAPERCLIP,AUTOBRR,PROWLARR,SONARR,RADARR,SEERR stopped
-```
+- **Access:** the router connects the LAN to `vmbr0`. Clients use Pi-hole for DNS and Caddy for reverse-proxy requests; WireGuard provides a separate tunnel network.
+- **Services:** all 23 containers include their CTIDs and recorded addresses. Running applications and stopped containers have separate groups; unknown DHCP addresses remain explicit.
+- **Storage:** TrueNAS media passes through Proxmox to Jellyfin, which uses `/vault` for transcodes. The local 2 × 12 TB ZFS mirror is shown separately because its relationship to those mounts is undocumented.
+- **Automation:** GitHub Actions validates configuration and supports manual Terraform deployment on a self-hosted runner, followed by optional Ansible configuration. These declarations differ from the runtime inventory.
 
-Container states and addresses are a snapshot; confirm them in Proxmox before making changes. Full inventory: [`docs/container-mapping.md`](docs/container-mapping.md).
+Arrows show documented network, storage, and automation paths. Groups express placement and inventory state, not inferred application dependencies. Exact Caddy upstreams, public exposure, storage mount protocol, and the live monitoring stack are not recorded.
+
+Container states and addresses are a snapshot; confirm them in Proxmox before making changes. Full inventory: [`docs/container-mapping.md`](docs/container-mapping.md). Architecture notes: [`docs/architecture.md`](docs/architecture.md).
 
 ## Repository
 

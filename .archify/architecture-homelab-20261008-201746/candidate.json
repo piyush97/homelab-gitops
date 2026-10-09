@@ -1,0 +1,920 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Piyush's Homelab",
+    "output": ".archify/architecture-homelab-20261008-201746/homelab.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/piyush97/homelab-gitops",
+      "revision": "195ad74eea7ed98d22d4e1a0e056f277f49a0cab"
+    }
+  },
+  "components": [
+    {
+      "id": "internet",
+      "type": "external",
+      "label": "Internet",
+      "sublabel": "Home WAN uplink",
+      "pos": [
+        465,
+        40
+      ],
+      "size": [
+        250,
+        68
+      ],
+      "sources": [
+        {
+          "path": "README.md",
+          "line": 22,
+          "end_line": 24
+        }
+      ]
+    },
+    {
+      "id": "clients",
+      "type": "external",
+      "label": "LAN clients",
+      "sublabel": "Local service access",
+      "pos": [
+        70,
+        190
+      ],
+      "size": [
+        240,
+        68
+      ],
+      "sources": [
+        {
+          "path": "README.md",
+          "line": 22,
+          "end_line": 85
+        }
+      ]
+    },
+    {
+      "id": "router",
+      "type": "cloud",
+      "label": "Home router",
+      "sublabel": "192.168.0.1",
+      "pos": [
+        465,
+        190
+      ],
+      "size": [
+        250,
+        68
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture.md",
+          "line": 7,
+          "end_line": 8
+        }
+      ]
+    },
+    {
+      "id": "bridge",
+      "type": "cloud",
+      "label": "Proxmox / vmbr0",
+      "sublabel": "piyushmehta | 192.168.0.0/24",
+      "pos": [
+        465,
+        340
+      ],
+      "size": [
+        250,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture.md",
+          "line": 7,
+          "end_line": 8
+        }
+      ]
+    },
+    {
+      "id": "dns",
+      "type": "security",
+      "label": "Pi-hole | CT 105",
+      "sublabel": "192.168.0.23 | DNS only",
+      "tag": "RUNNING",
+      "pos": [
+        70,
+        340
+      ],
+      "size": [
+        240,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 13
+        }
+      ]
+    },
+    {
+      "id": "caddy",
+      "type": "security",
+      "label": "Caddy | CT 111",
+      "sublabel": "192.168.0.97 | reverse proxy",
+      "tag": "RUNNING",
+      "pos": [
+        70,
+        490
+      ],
+      "size": [
+        240,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 18
+        }
+      ]
+    },
+    {
+      "id": "vpn",
+      "type": "security",
+      "label": "WireGuard | CT 103",
+      "sublabel": "192.168.0.217 | 10.0.0.1/24",
+      "tag": "RUNNING",
+      "pos": [
+        870,
+        340
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 11
+        }
+      ]
+    },
+    {
+      "id": "peers",
+      "type": "external",
+      "label": "WireGuard peers",
+      "sublabel": "Tunnel network 10.0.0.0/24",
+      "pos": [
+        870,
+        190
+      ],
+      "size": [
+        260,
+        68
+      ],
+      "sources": [
+        {
+          "path": "README.md",
+          "line": 86,
+          "end_line": 86
+        }
+      ]
+    },
+    {
+      "id": "truenas",
+      "type": "database",
+      "label": "TrueNAS media",
+      "sublabel": "Mounted on Proxmox",
+      "pos": [
+        465,
+        490
+      ],
+      "size": [
+        240,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture.md",
+          "line": 15
+        }
+      ]
+    },
+    {
+      "id": "jellyfin",
+      "type": "backend",
+      "label": "Jellyfin | CT 104",
+      "sublabel": "192.168.0.33 | media playback",
+      "tag": "RUNNING",
+      "pos": [
+        465,
+        650
+      ],
+      "size": [
+        250,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 12
+        },
+        {
+          "path": "docs/architecture.md",
+          "line": 15,
+          "end_line": 16
+        }
+      ]
+    },
+    {
+      "id": "vault",
+      "type": "database",
+      "label": "/vault",
+      "sublabel": "Jellyfin transcodes",
+      "pos": [
+        870,
+        650
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture.md",
+          "line": 16
+        }
+      ]
+    },
+    {
+      "id": "homeassistant",
+      "type": "frontend",
+      "label": "Home Assistant | CT 101",
+      "sublabel": "192.168.0.132 | Docker",
+      "tag": "RUNNING",
+      "pos": [
+        70,
+        780
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 10
+        }
+      ]
+    },
+    {
+      "id": "mqtt",
+      "type": "messagebus",
+      "label": "MQTT | CT 110",
+      "sublabel": "DHCP | address unknown",
+      "tag": "RUNNING",
+      "pos": [
+        470,
+        780
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 17
+        }
+      ]
+    },
+    {
+      "id": "monitoring",
+      "type": "backend",
+      "label": "Monitoring | CT 114",
+      "sublabel": "DHCP | address unknown",
+      "tag": "RUNNING",
+      "pos": [
+        870,
+        780
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 21
+        }
+      ]
+    },
+    {
+      "id": "qdrant",
+      "type": "database",
+      "label": "Qdrant | CT 100",
+      "sublabel": "192.168.0.76",
+      "tag": "RUNNING",
+      "pos": [
+        70,
+        900
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 9
+        }
+      ]
+    },
+    {
+      "id": "redis",
+      "type": "database",
+      "label": "Redis | CT 116",
+      "sublabel": "DHCP | address unknown",
+      "tag": "RUNNING",
+      "pos": [
+        470,
+        900
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 23
+        }
+      ]
+    },
+    {
+      "id": "hermes",
+      "type": "backend",
+      "label": "Hermes Agent | CT 107",
+      "sublabel": "192.168.0.136",
+      "tag": "RUNNING",
+      "pos": [
+        870,
+        900
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 15
+        }
+      ]
+    },
+    {
+      "id": "trilium",
+      "type": "frontend",
+      "label": "Trilium | CT 106",
+      "sublabel": "192.168.0.106",
+      "tag": "RUNNING",
+      "pos": [
+        70,
+        1020
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 14
+        }
+      ]
+    },
+    {
+      "id": "actual",
+      "type": "frontend",
+      "label": "Actual Budget | CT 108",
+      "sublabel": "192.168.0.247",
+      "tag": "RUNNING",
+      "pos": [
+        470,
+        1020
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 16
+        }
+      ]
+    },
+    {
+      "id": "immich",
+      "type": "frontend",
+      "label": "Immich | CT 117",
+      "sublabel": "192.168.0.111",
+      "tag": "RUNNING",
+      "pos": [
+        870,
+        1020
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 24
+        }
+      ]
+    },
+    {
+      "id": "plex",
+      "type": "backend",
+      "label": "Plex | CT 115",
+      "sublabel": "192.168.0.207",
+      "tag": "RUNNING",
+      "pos": [
+        70,
+        1140
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 22
+        }
+      ]
+    },
+    {
+      "id": "qbit",
+      "type": "backend",
+      "label": "qBittorrent | CT 204",
+      "sublabel": "192.168.0.43",
+      "tag": "RUNNING",
+      "pos": [
+        470,
+        1140
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 30
+        }
+      ]
+    },
+    {
+      "id": "router9",
+      "type": "backend",
+      "label": "9router | CT 113",
+      "sublabel": "192.168.0.45",
+      "tag": "RUNNING",
+      "pos": [
+        870,
+        1140
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "id": "paperless",
+      "type": "frontend",
+      "label": "Paperless-ngx | CT 128",
+      "sublabel": "192.168.0.36",
+      "tag": "STOPPED",
+      "pos": [
+        70,
+        1260
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 26
+        }
+      ]
+    },
+    {
+      "id": "paperclip",
+      "type": "frontend",
+      "label": "Paperclip | CT 118",
+      "sublabel": "DHCP | address unknown",
+      "tag": "STOPPED",
+      "pos": [
+        470,
+        1260
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 25
+        }
+      ]
+    },
+    {
+      "id": "autobrr",
+      "type": "backend",
+      "label": "autobrr | CT 112",
+      "sublabel": "DHCP | address unknown",
+      "tag": "STOPPED",
+      "pos": [
+        870,
+        1260
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 19
+        }
+      ]
+    },
+    {
+      "id": "prowlarr",
+      "type": "backend",
+      "label": "Prowlarr | CT 201",
+      "sublabel": "192.168.0.40",
+      "tag": "STOPPED",
+      "pos": [
+        70,
+        1380
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 27
+        }
+      ]
+    },
+    {
+      "id": "sonarr",
+      "type": "backend",
+      "label": "Sonarr | CT 202",
+      "sublabel": "192.168.0.41",
+      "tag": "STOPPED",
+      "pos": [
+        470,
+        1380
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 28
+        }
+      ]
+    },
+    {
+      "id": "radarr",
+      "type": "backend",
+      "label": "Radarr | CT 203",
+      "sublabel": "192.168.0.42",
+      "tag": "STOPPED",
+      "pos": [
+        870,
+        1380
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 29
+        }
+      ]
+    },
+    {
+      "id": "seerr",
+      "type": "frontend",
+      "label": "Seerr | CT 205",
+      "sublabel": "192.168.0.44",
+      "tag": "STOPPED",
+      "pos": [
+        70,
+        1500
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/container-mapping.md",
+          "line": 31
+        }
+      ]
+    },
+    {
+      "id": "zfs",
+      "type": "database",
+      "label": "Local ZFS mirror",
+      "sublabel": "2 x 12 TB | native SATA",
+      "pos": [
+        870,
+        490
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/architecture.md",
+          "line": 17
+        }
+      ]
+    },
+    {
+      "id": "github",
+      "type": "external",
+      "label": "GitHub Actions",
+      "sublabel": "CI + manual deployment workflow",
+      "pos": [
+        70,
+        1720
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "line": 1,
+          "end_line": 64
+        },
+        {
+          "path": ".github/workflows/deploy.yml",
+          "line": 1,
+          "end_line": 27
+        }
+      ]
+    },
+    {
+      "id": "terraform",
+      "type": "cloud",
+      "label": "Terraform declarations",
+      "sublabel": "Self-hosted runner | plan / apply",
+      "pos": [
+        470,
+        1720
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": ".github/workflows/deploy.yml",
+          "line": 34,
+          "end_line": 75
+        },
+        {
+          "path": "terraform/modules/lxc-container/main.tf",
+          "line": 13,
+          "end_line": 57
+        }
+      ]
+    },
+    {
+      "id": "ansible",
+      "type": "backend",
+      "label": "Ansible configuration",
+      "sublabel": "Optional after Terraform job",
+      "pos": [
+        870,
+        1720
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": ".github/workflows/deploy.yml",
+          "line": 77,
+          "end_line": 103
+        },
+        {
+          "path": "ansible/playbooks/site.yml",
+          "line": 3,
+          "end_line": 75
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Homelab runtime / Proxmox containers + attached storage",
+      "wraps": [
+        "bridge",
+        "dns",
+        "caddy",
+        "vpn",
+        "jellyfin",
+        "vault",
+        "homeassistant",
+        "mqtt",
+        "monitoring",
+        "qdrant",
+        "redis",
+        "hermes",
+        "trilium",
+        "actual",
+        "immich",
+        "plex",
+        "qbit",
+        "router9",
+        "paperless",
+        "paperclip",
+        "autobrr",
+        "prowlarr",
+        "sonarr",
+        "radarr",
+        "seerr",
+        "zfs",
+        "truenas"
+      ],
+      "pad": 28
+    },
+    {
+      "kind": "region",
+      "label": "Running applications / automation, data, personal services and media",
+      "wraps": [
+        "homeassistant",
+        "mqtt",
+        "monitoring",
+        "qdrant",
+        "redis",
+        "hermes",
+        "trilium",
+        "actual",
+        "immich",
+        "plex",
+        "qbit",
+        "router9"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "Stopped containers / retained in the inventory",
+      "wraps": [
+        "paperless",
+        "paperclip",
+        "autobrr",
+        "prowlarr",
+        "sonarr",
+        "radarr",
+        "seerr"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "Repository automation / declarations differ from the runtime snapshot",
+      "wraps": [
+        "github",
+        "terraform",
+        "ansible"
+      ],
+      "pad": 22
+    }
+  ],
+  "connections": [
+    {
+      "from": "internet",
+      "to": "router",
+      "label": "WAN uplink"
+    },
+    {
+      "from": "clients",
+      "to": "router",
+      "label": "LAN access"
+    },
+    {
+      "from": "router",
+      "to": "bridge",
+      "label": "LAN uplink"
+    },
+    {
+      "from": "clients",
+      "to": "dns",
+      "label": "DNS queries",
+      "variant": "security"
+    },
+    {
+      "from": "clients",
+      "to": "caddy",
+      "label": "Proxy requests",
+      "variant": "dashed"
+    },
+    {
+      "from": "vpn",
+      "to": "peers",
+      "label": "Tunnel peers",
+      "variant": "security"
+    },
+    {
+      "from": "truenas",
+      "to": "jellyfin",
+      "label": "Media passthrough"
+    },
+    {
+      "from": "jellyfin",
+      "to": "vault",
+      "label": "Transcodes"
+    },
+    {
+      "from": "github",
+      "to": "terraform",
+      "label": "Manual dispatch",
+      "variant": "dashed"
+    },
+    {
+      "from": "terraform",
+      "to": "ansible",
+      "label": "If requested",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Network and access",
+      "items": [
+        "All 23 listed containers belong to the documented Proxmox homelab; the bridge boundary groups their LAN placement.",
+        "Pi-hole supplies DNS only. Caddy handles reverse proxying; exact upstreams and public exposure are undocumented.",
+        "WireGuard has LAN address 192.168.0.217 and tunnel interface 10.0.0.1/24."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Storage",
+      "items": [
+        "TrueNAS media is mounted on Proxmox and passed into Jellyfin; the mount protocol is not recorded.",
+        "Jellyfin transcodes use /vault. The local ZFS mirror has two 12 TB disks on native SATA.",
+        "A relationship between TrueNAS, /vault and the local ZFS pool is not established in the source."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Snapshot, not a live probe",
+      "items": [
+        "16 running + 7 stopped containers. Unknown DHCP addresses remain unknown.",
+        "Runtime facts come from docs/container-mapping.md and docs/architecture.md; states and IPs can change.",
+        "No application dependencies are inferred from names. Monitoring's live internal stack is not recorded."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "How infrastructure is managed",
+      "items": [
+        "CI validates Terraform and Ansible. Deployment is manually dispatched on a self-hosted runner.",
+        "Terraform declares Proxmox LXC resources; optional Ansible runs the site playbook after the Terraform job.",
+        "Declarations and Ansible inventory differ from the runtime snapshot; application tasks are partly unimplemented."
+      ]
+    }
+  ]
+}
