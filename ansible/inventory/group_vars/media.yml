@@ -9,16 +9,6 @@ media_paths:
   downloads: "/data/downloads"
   torrents: "/data/downloads/torrents"
 
-# Docker configuration for media containers
-docker:
-  enabled: true
-  compose_version: "2.21.0"
-  data_root: "/docker"
-  log_driver: "json-file"
-  log_opts:
-    max-size: "10m"
-    max-file: "3"
-
 # *arr stack configuration
 arr_stack:
   base_url: ""

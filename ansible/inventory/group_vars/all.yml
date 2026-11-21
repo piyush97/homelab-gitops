@@ -48,6 +48,17 @@ resource_limits:
   memory_accounting: true
   cpu_accounting: true
 
+# Docker configuration (roles/docker) for media, security and business hosts
+docker:
+  compose_version: "2.21.0"
+  data_root: "{{ docker_mount }}"
+  daemon:
+    log_driver: "json-file"
+    log_opts:
+      max-size: "10m"
+      max-file: "3"
+    storage_driver: "overlay2"
+
 # Update management
 auto_updates:
   enabled: false

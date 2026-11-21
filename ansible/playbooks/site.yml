@@ -18,14 +18,6 @@
   roles:
     - docker
 
-  vars:
-    # Media-specific Docker configuration
-    docker:
-      enabled: true
-      compose_version: "{{ docker.compose_version }}"
-      data_root: "{{ docker_mount }}"
-      daemon: "{{ docker.daemon }}"
-
   tags:
     - media
     - docker
