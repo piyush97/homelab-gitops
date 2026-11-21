@@ -14,8 +14,8 @@ override.tf.json
 *.retry
 .vault_pass.txt
 vault_keys/
-group_vars/*/vault.yml
-host_vars/*/vault.yml
+**/group_vars/*/vault.yml
+**/host_vars/*/vault.yml
 
 # Secrets and credentials
 secrets/
