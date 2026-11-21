@@ -37,10 +37,7 @@
   roles:
     - monitoring
 
-  tasks:
-    - name: Configure Prometheus
-      ansible.builtin.include_tasks: ../tasks/prometheus.yml
-      when: "'prometheus' in services"
+  # Prometheus is installed by the monitoring role (roles/monitoring/tasks/main.yml).
 
   # TODO: Grafana / Uptime Kuma task files not yet committed.
   # Add here once ../tasks/grafana.yml and ../tasks/uptimekuma.yml land.

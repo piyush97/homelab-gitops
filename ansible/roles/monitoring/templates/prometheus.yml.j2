@@ -1,0 +1,11 @@
+global:
+  scrape_interval: {{ prometheus.scrape_interval }}
+  evaluation_interval: {{ prometheus.evaluation_interval }}
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["{{ hostvars['alertmanager'].ansible_host }}:{{ alertmanager.port }}"]
+
+scrape_configs:
+{{ prometheus.targets | to_nice_yaml(indent=2) }}

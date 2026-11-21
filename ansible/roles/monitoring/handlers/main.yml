@@ -24,3 +24,9 @@
     name: promtail
     state: restarted
   listen: restart promtail
+
+- name: restart prometheus
+  ansible.builtin.systemd:
+    name: prometheus
+    state: restarted
+  listen: restart prometheus
