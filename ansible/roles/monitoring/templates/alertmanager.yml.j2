@@ -16,7 +16,6 @@ receivers:
   webhook_configs:
 {% for webhook in receiver.webhook_configs %}
   - url: {{ webhook.url }}
-    title: "{{ webhook.title }}"
     send_resolved: {{ webhook.send_resolved }}
     http_config:
       basic_auth:
