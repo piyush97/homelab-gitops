@@ -178,7 +178,8 @@ generate_report() {
     log_info "Generating validation report..."
     
     local report_file="$PROJECT_ROOT/validation-report.md"
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     
     cat > "$report_file" << EOF
 # Infrastructure Validation Report
@@ -201,8 +202,8 @@ Generated: $timestamp
 ## Ansible Details
 
 - **Playbooks**: $(find ansible/playbooks -name "*.yml" | wc -l) files
-- **Roles**: $(find ansible/roles -maxdepth 1 -type d | grep -v "^ansible/roles$" | wc -l) roles
-- **Inventory Hosts**: $(grep -E "^  [a-zA-Z]" ansible/inventory/hosts.yml | grep -v "children:" | wc -l) hosts
+- **Roles**: $(find ansible/roles -maxdepth 1 -type d | grep -vc "^ansible/roles$") roles
+- **Inventory Hosts**: $(grep -E "^  [a-zA-Z]" ansible/inventory/hosts.yml | grep -vc "children:") hosts
 
 ## Infrastructure Coverage
 
