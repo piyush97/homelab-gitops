@@ -2,6 +2,9 @@ global:
   scrape_interval: {{ prometheus.scrape_interval }}
   evaluation_interval: {{ prometheus.evaluation_interval }}
 
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
 alerting:
   alertmanagers:
     - static_configs:
