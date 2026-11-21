@@ -55,10 +55,24 @@ jobs:
       - name: Install Ansible
         run: |
           python -m pip install --upgrade pip
-          pip install ansible
+          pip install ansible yamllint
+
+      - name: YAML Lint
+        run: yamllint .
 
       - name: Validate Ansible Inventory
         run: ansible-inventory --list --yaml
 
       - name: Ansible Playbook Syntax Check
         run: ansible-playbook playbooks/site.yml --syntax-check
+
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      # shellcheck is preinstalled on GitHub-hosted Ubuntu runners.
+      - name: ShellCheck scripts
+        run: shellcheck scripts/*.sh
