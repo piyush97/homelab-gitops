@@ -139,6 +139,7 @@ glance:
 node_exporter:
   version: "1.6.0"
   port: 9100
+  user: node_exporter
   enabled_collectors:
     - "systemd"
     - "processes"
