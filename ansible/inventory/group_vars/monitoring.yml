@@ -191,7 +191,6 @@ alertmanager:
     - name: "homelab-notifications"
       webhook_configs:
         - url: "http://192.168.0.124/homelab-critical"
-          title: "🚨 {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}"
           send_resolved: true
 
 # Blackbox Exporter configuration
