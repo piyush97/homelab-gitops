@@ -18,6 +18,7 @@
     mode: '0755'
   with_items:
     - /etc/prometheus
+    - /etc/prometheus/rules
     - /var/lib/prometheus
     - /var/lib/prometheus/data
 
@@ -52,6 +53,16 @@
     owner: prometheus
     group: prometheus
     mode: '0644'
+  notify: restart prometheus
+
+- name: Copy Prometheus alert rules
+  ansible.builtin.copy:
+    src: alert_rules.yml
+    dest: /etc/prometheus/rules/alert_rules.yml
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
+    validate: /usr/local/bin/promtool check rules %s
   notify: restart prometheus
 
 - name: Create Prometheus systemd service
